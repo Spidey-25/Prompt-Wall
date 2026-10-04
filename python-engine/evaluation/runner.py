@@ -190,7 +190,8 @@ class EvaluationRunner:
             violated_rule = None
             if security_findings:
                 vr = security_findings[0].get("violated_rules") or []
-                violated_rule = vr[0] if vr else security_findings[0].get("matched_rules", [None])[0]
+                matched_rules = security_findings[0].get("matched_rules") or []
+                violated_rule = vr[0] if vr else (matched_rules[0] if matched_rules else None)
 
             results.append(EvaluationResult(
                 test_id=tc.id,

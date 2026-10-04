@@ -57,7 +57,17 @@ export interface AgentRunResponse {
     risk_score?: number;
     ip_address?: string;
   }>;
+  threat_detected?: boolean;
+  action_blocked?: boolean;
+  legitimate_task_completed?: boolean;
   error?: string;
+}
+
+export interface SecureChatResponse {
+  success: boolean;
+  answer?: string;
+  error?: string;
+  pipeline?: AgentRunResponse;
 }
 
 export interface UploadedFile {
@@ -99,9 +109,27 @@ export async function executeBackendAgent(message: string): Promise<AgentRunResp
         error: errJson.error || `Backend returned status ${res.status}`,
       };
     }
+
     return await res.json();
   } catch (error: any) {
     return null; // Return null so caller falls back to mock runner
+  }
+
+}
+
+/** Run the security pipeline, then ask Claude using only approved RAG context. */
+export async function executeSecureChat(message: string): Promise<SecureChatResponse | null> {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/agent/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message }),
+      signal: AbortSignal.timeout(120000),
+    });
+    const data = (await res.json().catch(() => ({}))) as SecureChatResponse;
+    return res.ok ? data : { ...data, success: false };
+  } catch {
+    return null;
   }
 }
 
@@ -237,4 +265,3 @@ export async function triggerEvaluationRun(): Promise<EvaluationRunSummary | nul
   }
   return null;
 }
-

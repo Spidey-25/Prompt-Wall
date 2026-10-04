@@ -68,7 +68,12 @@ class ContentFirewall:
             decision = "QUARANTINE" if (classification == "PROMPT_INJECTION") else "FLAG"
             severity = "CRITICAL" if decision == "QUARANTINE" else "HIGH"
             confidence = max(classification_res.get("confidence", 0.95), ai_analysis.confidence)
-            reason = classification_res.get("reason") or ai_analysis.reason or "Adversarial prompt injection detected in retrieved content."
+            rule_reason = classification_res.get("reason", "")
+            reason = (
+                ai_analysis.reason
+                if rule_reason == "Content is clean. No prompt injection or policy violations detected."
+                else rule_reason
+            ) or ai_analysis.reason or "Adversarial prompt injection detected in retrieved content."
         else:
             classification = "BENIGN"
             decision = "ALLOW"

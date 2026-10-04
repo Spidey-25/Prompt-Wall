@@ -10,5 +10,6 @@ const router = Router();
  * Reply:  { success, response, retrieved_context, tool_used, tool_result }
  */
 router.post('/run', AgentController.runAgent);
+router.post('/chat', AgentController.runSecureChat);
 
 export default router;

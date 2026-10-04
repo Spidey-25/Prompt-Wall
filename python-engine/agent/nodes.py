@@ -117,6 +117,35 @@ def rag_retrieval_node(state: AgentState) -> Dict[str, Any]:
     rag = _get_rag()
     query = state["user_request"]
     results = rag.retrieve(query, top_k=3)
+
+    # A filename explicitly supplied by the user is trusted input, not merely
+    # a semantic RAG match. Read it directly so the firewall evaluates the
+    # actual uploaded document before the agent proposes any action.
+    requested_files = re.findall(
+        r"[\w\-.+]+\.(?:txt|pdf|csv|md|json|log|docx)",
+        query,
+        re.IGNORECASE,
+    )
+    if requested_files:
+        from tools.read_file import read_file
+
+        direct_results = []
+        existing_sources = {
+            str(chunk.get("source_id", "")).lower()
+            for chunk in results
+        }
+        for filename in dict.fromkeys(requested_files):
+            file_result = read_file(filename)
+            if file_result.get("success") and file_result["path"].lower() not in existing_sources:
+                direct_results.append({
+                    "source_id": file_result["path"],
+                    "text": file_result["content"],
+                    "retrieval_source": "direct_user_file",
+                })
+        # When the user names a file, do not mix in unrelated RAG matches.
+        # The decision must be based on that file's content only.
+        results = direct_results
+
     latency_ms = round((time.perf_counter() - t0) * 1000, 2)
 
     timing = dict(state.get("timing", {}))
@@ -265,7 +294,13 @@ def _generate_plan(
     proposed_actions: List[Dict[str, Any]] = []
 
     # Determine steps and tools needed
-    file_matches = re.findall(r"[\w\-.+]+\.(?:txt|pdf|csv|md|json|log|docx)", combined, re.IGNORECASE)
+    # File reads must originate from the trusted user request. Filenames found
+    # in retrieved content may be prompt-injection payloads, not user intent.
+    file_matches = re.findall(
+        r"[\w\-.+]+\.(?:txt|pdf|csv|md|json|log|docx)",
+        req_lower,
+        re.IGNORECASE,
+    )
 
     if file_matches:
         for f in file_matches:
@@ -453,8 +488,14 @@ def _decide_tool(
     combined_text = req_lower + " " + context_text
     executed_tool_calls = executed_tool_calls or []
 
-    # 1. read_file tool check: search for files mentioned in prompt or context
-    file_matches = re.findall(r"[\w\-.+]+\.(?:txt|pdf|csv|md|json|log|docx)", combined_text, re.IGNORECASE)
+    # 1. read_file tool check: only the trusted request can select a path.
+    # Filenames in retrieved content are untrusted and must never become tool
+    # arguments.
+    file_matches = re.findall(
+        r"[\w\-.+]+\.(?:txt|pdf|csv|md|json|log|docx)",
+        req_lower,
+        re.IGNORECASE,
+    )
     if file_matches:
         for target_file in file_matches:
             already_read = any(
@@ -463,24 +504,6 @@ def _decide_tool(
             )
             if not already_read:
                 return ("read_file", {"path": target_file})
-
-    if "read_file" not in executed_tools:
-        if any(kw in req_lower for kw in ["read", "open", "file", "document", "inspect", "analyze", "compare"]):
-            # Try finding any file in sandbox directory dynamically
-            sandbox_dir = os.path.realpath(
-                os.path.join(os.path.dirname(__file__), "..", "data", "mock_files")
-            )
-            if os.path.exists(sandbox_dir):
-                available_files = [f for f in os.listdir(sandbox_dir) if os.path.isfile(os.path.join(sandbox_dir, f))]
-                unread_files = [
-                    f for f in available_files
-                    if not any(
-                        call.get("tool") == "read_file" and call.get("arguments", {}).get("path", "").lower() == f.lower()
-                        for call in executed_tool_calls
-                    )
-                ]
-                if unread_files:
-                    return ("read_file", {"path": unread_files[0]})
 
     # 2. search_web tool check
     if "search_web" not in executed_tools:
@@ -797,8 +820,8 @@ def _synthesize_final_response(
 
     # Section 1: Content Firewall Security Status Banner if flagged/quarantined
     if firewall_result and firewall_result.get("status") == "QUARANTINED":
-        lines.append("🛡️ [CONTENT FIREWALL: SANITIZED & PASSED]")
-        lines.append(f"Status: SANITIZED | Classification: {firewall_result.get('classification')} (Confidence: {firewall_result.get('confidence', 0.0):.2f})")
+        lines.append("🛡️ [CONTENT FIREWALL: QUARANTINED]")
+        lines.append(f"Status: QUARANTINED | Classification: {firewall_result.get('classification')} (Confidence: {firewall_result.get('confidence', 0.0):.2f})")
         lines.append(f"Reason: {firewall_result.get('reason')}")
         lines.append("Action: Prompt injection instructions were neutralized ([QUARANTINED]). Legitimate document content was preserved and safely passed to the agent.")
         lines.append("")
@@ -857,11 +880,21 @@ def _synthesize_final_response(
         for res in tool_results
         if res.get("tool") == "read_file" and res.get("result", {}).get("success")
     ]
+    file_errors = [
+        res.get("result", {}).get("message") or res.get("result", {}).get("error")
+        for res in tool_results
+        if res.get("tool") == "read_file" and not res.get("result", {}).get("success")
+    ]
     if file_contents:
         lines.append("File Content Retrieved:")
         for content in file_contents:
             lines.append(f"```\n{content}\n```")
         lines.append("")
+    elif file_errors:
+        lines.append("File Content Unavailable:")
+        for error in file_errors:
+            lines.append(f"  • {error}")
+        lines.append("No decision was made from the missing file content.")
 
     search_results = [
         res.get("result", {}).get("results")
@@ -896,7 +929,7 @@ def _synthesize_final_response(
         lines.append("Unit Prices from Vendor Quotations:")
         for src, val in sorted(prices.items()):
             lines.append(f"  • {src}: {val.split(':', 1)[1].strip()}")
-    elif not file_contents and not search_results:
+    elif not file_contents and not file_errors and not search_results:
         if context_chunks:
             lines.append(f"Retrieved {len(context_chunks)} relevant vendor quotation chunk(s) from document corpus.")
         else:

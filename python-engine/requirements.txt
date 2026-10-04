@@ -6,3 +6,4 @@ langchain-community>=0.0.20
 langgraph>=0.0.20
 numpy>=1.24.0
 typing_extensions>=4.0.0
+python-dotenv>=1.0.0

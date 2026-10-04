@@ -23,6 +23,8 @@ export interface AgentRunResponse {
   tool_calls?: Array<{ tool: string; arguments: any }>;
   tool_results?: Array<{ tool: string; result: any }>;
   error?: string;
+  threat_detected?: boolean;
+  action_blocked?: boolean;
 }
 
 export class PythonService {

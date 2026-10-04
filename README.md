@@ -42,6 +42,11 @@ npm install
 npm run dev
 ```
 Node service runs at `http://localhost:5000`.
+For the pipeline-gated Claude chatbot, copy `backend/.env.example` to
+`backend/.env` and set `OPENROUTER_API_KEY` for an OpenRouter key, or
+`ANTHROPIC_API_KEY` for a native Anthropic key. Claude is called only after the
+Python security pipeline passes and receives sanitized RAG document context,
+not the raw user prompt.
 Health endpoints:
 - Node Health: `GET /api/health`
 - Python Health via Node: `GET /api/health/python`

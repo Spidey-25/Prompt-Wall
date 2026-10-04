@@ -26,9 +26,10 @@ import FinalResponsePanel from "@/components/secure-rag/FinalResponse";
 import MetricsStrip from "@/components/secure-rag/MetricsStrip";
 import LiveEventStream from "@/components/secure-rag/LiveEventStream";
 import Reveal from "@/components/secure-rag/Reveal";
-import { executeBackendAgent } from "@/lib/api/backendClient";
+import { executeSecureChat, type AgentRunResponse } from "@/lib/api/backendClient";
 import { ingestBackendAuditEvents } from "@/lib/auditEventStore";
 import { ShieldIcon } from "@/components/secure-rag/icons";
+import PipelineChatbot from "@/components/secure-rag/PipelineChatbot";
 
 /**
  * Agent Playground — submit an AI-agent task and watch the complete
@@ -41,6 +42,8 @@ export default function PlaygroundPage() {
   const [liveEvents, setLiveEvents] = useState<LiveSecurityEvent[]>(SEED_LIVE_EVENTS);
   const [running, setRunning] = useState(false);
   const [resolving, setResolving] = useState(false);
+  const [chatAnswer, setChatAnswer] = useState<string | null>(null);
+  const [chatError, setChatError] = useState<string>("");
 
   const cancelRef = useRef<{ cancelled: boolean }>({ cancelled: false });
   const resultRef = useRef<HTMLDivElement>(null);
@@ -75,6 +78,8 @@ export default function PlaygroundPage() {
     setDecision(null);
     setFinalResponse(null);
     setLiveEvents([]);
+    setChatAnswer(null);
+    setChatError("");
   }, []);
 
   const handleRun = useCallback(
@@ -85,7 +90,8 @@ export default function PlaygroundPage() {
 
       try {
         // Attempt real backend server execution first
-        const backendRes = await executeBackendAgent(prompt);
+        const chatRes = await executeSecureChat(prompt);
+        const backendRes: AgentRunResponse | null = chatRes?.pipeline || null;
 
         if (backendRes && backendRes.success) {
           const stagesList: WorkflowStage[] = INITIAL_STAGES.map((s) => ({
@@ -150,11 +156,21 @@ export default function PlaygroundPage() {
             ],
           });
 
+          if (chatRes?.success && chatRes.answer) {
+            setChatAnswer(chatRes.answer);
+          } else {
+            setChatError(chatRes?.error || "Claude could not answer from the approved context.");
+          }
+
           // Push real audit events into the shared store for the Audit Logs page
           if (backendRes.audit_events?.length) {
             ingestBackendAuditEvents(backendRes.audit_events, backendRes.task_id);
           }
           return;
+        }
+
+        if (chatRes?.error) {
+          setChatError(chatRes.error);
         }
 
         // Fallback to simulation pipeline if backend unavailable
@@ -275,6 +291,7 @@ export default function PlaygroundPage() {
         <Reveal className="lg:col-span-12" delay={150}>
           <LiveEventStream events={liveEvents} />
         </Reveal>
+        <PipelineChatbot answer={chatAnswer} error={chatError} />
       </div>
     </PageShell>
   );

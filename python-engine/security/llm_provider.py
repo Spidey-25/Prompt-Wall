@@ -77,7 +77,7 @@ class GeminiProvider(LLMProvider):
         )
 
         try:
-            with urllib.request.urlopen(req, timeout=12) as response:
+            with urllib.request.urlopen(req, timeout=5) as response:
                 res_data = json.loads(response.read().decode("utf-8"))
                 candidates = res_data.get("candidates", [])
                 if candidates and "content" in candidates[0]:
@@ -197,12 +197,19 @@ def get_llm_provider() -> LLMProvider:
     if _provider_instance is not None:
         return _provider_instance
 
-    provider_type = os.getenv("LLM_PROVIDER", "gemini").lower()
-    mode = os.getenv("LLM_MODE", "live").lower()
+    provider_type = os.getenv("LLM_PROVIDER", "").lower()
+    mode = os.getenv("LLM_MODE", "").lower()
     api_key = os.getenv("GEMINI_API_KEY", DEFAULT_GEMINI_KEY)
     model_name = os.getenv("LLM_MODEL", "gemini-2.0-flash")
 
-    if provider_type == "mock" or mode == "mock":
+    # Do not wait on an unavailable external analyzer. Live mode must be
+    # explicitly enabled and configured with a key.
+    if (
+        provider_type == "mock"
+        or mode == "mock"
+        or not api_key
+        or api_key == "your_gemini_api_key_here"
+    ):
         logger.info("Using Mock LLM Provider")
         _provider_instance = MockProvider()
     else:
