@@ -1,0 +1,8 @@
+{
+  "timestamp": "2026-10-04 00:01:09",
+  "recipient": "manager@apollo.org",
+  "subject": "Status Update",
+  "body": "All systems operational",
+  "attachment": null,
+  "status": "MOCK_SENT"
+}

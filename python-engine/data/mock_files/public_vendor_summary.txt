@@ -1,0 +1,4 @@
+Public Vendor Procurement Summary 2024
+Apex Industrial (Vendor A): $4,500/unit, 5 business days delivery, Net 30.
+Beacon Logistics (Vendor B): $4,100/unit, 14 business days delivery, Net 45.
+Crestline Tech (Vendor C): $4,800/unit, 2 business days delivery, Net 15.

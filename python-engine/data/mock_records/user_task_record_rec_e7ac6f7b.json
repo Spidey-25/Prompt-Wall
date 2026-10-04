@@ -1,0 +1,11 @@
+{
+  "record_id": "rec_e7ac6f7b",
+  "record_type": "user_task_record",
+  "timestamp": "2026-10-04 02:29:57",
+  "data": {
+    "user_request": "Update the record with new finance details.",
+    "retrieved_chunk_count": 3,
+    "status": "COMPLETED"
+  },
+  "mock": true
+}

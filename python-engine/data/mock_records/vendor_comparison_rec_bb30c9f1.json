@@ -1,0 +1,11 @@
+{
+  "record_id": "rec_bb30c9f1",
+  "record_type": "vendor_comparison",
+  "timestamp": "2026-10-03 19:37:45",
+  "data": {
+    "user_request": "Store this vendor comparison analysis as a database record.",
+    "retrieved_chunk_count": 3,
+    "status": "COMPLETED"
+  },
+  "mock": true
+}

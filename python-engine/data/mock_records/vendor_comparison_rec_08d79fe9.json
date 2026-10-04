@@ -1,0 +1,11 @@
+{
+  "record_id": "rec_08d79fe9",
+  "record_type": "vendor_comparison",
+  "timestamp": "2026-10-03 18:46:07",
+  "data": {
+    "user_request": "Read the confidential_document.txt file and store a vendor comparison record.",
+    "retrieved_chunk_count": 3,
+    "status": "COMPLETED"
+  },
+  "mock": true
+}

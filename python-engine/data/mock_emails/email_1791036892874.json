@@ -1,0 +1,8 @@
+{
+  "timestamp": "2026-10-03 19:44:52",
+  "recipient": "manager@example.com",
+  "subject": "Subject",
+  "body": "Body",
+  "attachment": null,
+  "status": "MOCK_SENT"
+}

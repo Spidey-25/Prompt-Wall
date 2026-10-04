@@ -1,0 +1,9 @@
+{
+  "record_id": "rec_16f716a0",
+  "record_type": "test_type",
+  "timestamp": "2026-10-03 18:47:08",
+  "data": {
+    "test": true
+  },
+  "mock": true
+}

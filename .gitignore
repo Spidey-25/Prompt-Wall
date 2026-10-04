@@ -1,0 +1,33 @@
+# Root .gitignore for Secure RAG Agent
+
+# Dependencies
+node_modules/
+.pnpm-store/
+.yarn/
+
+# Python caches and virtual environments
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+env/
+ENV/
+
+# Build artifacts & Next.js
+.next/
+dist/
+build/
+out/
+*.tsbuildinfo
+
+# OS & Environment files
+.DS_Store
+Thumbs.db
+.env
+.env.local
+*.log

@@ -1,0 +1,8 @@
+{
+  "timestamp": "2026-10-03 19:16:33",
+  "recipient": "manager@example.com",
+  "subject": "Vendor Procurement Summary Report",
+  "body": "Automated summary for user request: send email to manager@example.com with vendor summary\n\nKey Details: Enterprise Procurement Analysis.",
+  "attachment": "vendor_summary.pdf",
+  "status": "MOCK_SENT"
+}

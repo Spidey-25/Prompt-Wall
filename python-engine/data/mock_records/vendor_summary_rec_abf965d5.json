@@ -1,0 +1,9 @@
+{
+  "record_id": "rec_abf965d5",
+  "record_type": "vendor_summary",
+  "timestamp": "2026-10-03 20:49:00",
+  "data": {
+    "data": 123
+  },
+  "mock": true
+}
