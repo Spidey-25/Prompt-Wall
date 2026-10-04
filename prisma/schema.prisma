@@ -30,3 +30,16 @@ model Post {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Workspace {
+  id            String   @id @default(cuid())
+  name          String   @default("PromptWall Workspace")
+  prompt        String   @default("")
+  attachments   String   @default("[]")
+  pipeline      String   @default("{}")
+  evaluation    String   @default("{}")
+  mlResult      String   @default("{}")
+  approvals     String   @default("[]")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}

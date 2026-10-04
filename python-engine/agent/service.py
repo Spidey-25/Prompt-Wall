@@ -11,6 +11,7 @@ from typing import Any, Dict, List, Optional
 
 from agent.graph import agent_graph
 from agent.state import AgentState
+from audit_store import append_events
 
 
 class AgentService:
@@ -97,6 +98,8 @@ class AgentService:
         action_guard_result: Dict[str, Any] = final_state.get("action_guard_result") or {}
         tool_calls: List[Dict[str, Any]] = final_state.get("tool_calls", [])
         tool_results: List[Dict[str, Any]] = final_state.get("tool_results", [])
+        audit_events = final_state.get("audit_events", [])
+        append_events(audit_events)
 
         timing: Dict[str, Any] = final_state.get("timing", {})
         timing["total_execution_ms"] = total_ms
@@ -134,7 +137,7 @@ class AgentService:
             "tool_calls": tool_calls,
             "tool_results": tool_results,
             "security_findings": final_state.get("security_findings", []),
-            "audit_events": final_state.get("audit_events", []),
+            "audit_events": audit_events,
             "provenance": final_state.get("provenance", []),
             "timing": timing,
             "execution_status": final_state.get("execution_status", "COMPLETED"),

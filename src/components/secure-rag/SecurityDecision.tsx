@@ -14,28 +14,28 @@ interface SecurityDecisionProps {
 
 const DECISION_META = {
   ALLOW: {
-    label: "ALLOW — SAFE TASK",
-    color: "#22C55E",
+    label: "ALLOW - SAFE TASK",
+    color: "#EF4444",
     ring: "border-status-allow/40",
     bg: "from-status-allow/15",
     icon: CheckIcon,
     summary: "Request cleared all firewall guardrails and is executing strictly within authorized scope.",
   },
   BLOCK: {
-    label: "BLOCK — THREAT ISOLATED",
+    label: "BLOCK - THREAT ISOLATED",
     color: "#EF4444",
     ring: "border-status-block/40",
     bg: "from-status-block/15",
     icon: XIcon,
-    summary: "Adversarial prompt injection neutralized. Unauthorized action blocked — legitimate user task continued safely.",
+    summary: "Adversarial prompt injection neutralized. Unauthorized action blocked - legitimate user task continued safely.",
   },
   ASK_HUMAN: {
     label: "HUMAN APPROVAL REQUIRED",
-    color: "#F59E0B",
+    color: "#F87171",
     ring: "border-status-warn/40",
     bg: "from-status-warn/15",
     icon: AlertTriangleIcon,
-    summary: "Sensitive or elevated tool action proposed — human operator authorization required.",
+    summary: "Sensitive or elevated tool action proposed - human operator authorization required.",
   },
 } as const;
 
@@ -134,12 +134,12 @@ const SecurityDecisionPanel: React.FC<SecurityDecisionProps> = ({
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <Field
                 label="Content Firewall Scan"
-                value={decision.allow?.firewallScan || "PASSED — Zero Threat Signatures Matched"}
-                accent="#22C55E"
+                value={decision.allow?.firewallScan || "PASSED - Zero Threat Signatures Matched"}
+                accent="#EF4444"
               />
               <Field
                 label="Scope Compliance"
-                value={decision.allow?.scopeCompliance || "100% Authorized — Within Boundary"}
+                value={decision.allow?.scopeCompliance || "100% Authorized - Within Boundary"}
               />
               <Field
                 label="Tool Execution Status"
@@ -202,7 +202,7 @@ const SecurityDecisionPanel: React.FC<SecurityDecisionProps> = ({
               <div className="sm:col-span-2">
                 <Field
                   label="Legitimate Task Status"
-                  value={decision.block.legitimateTaskStatus || "COMPLETED — Task executed safely"}
+                  value={decision.block.legitimateTaskStatus || "COMPLETED - Task executed safely"}
                 />
               </div>
               <div className="sm:col-span-2">
@@ -219,7 +219,7 @@ const SecurityDecisionPanel: React.FC<SecurityDecisionProps> = ({
                         className="h-full rounded-full"
                         style={{
                           width: `${decision.block.confidence}%`,
-                          background: "linear-gradient(90deg, #FF6A00, #FFC21A)",
+                          background: "linear-gradient(90deg, #DC2626, #F87171)",
                         }}
                       />
                     </div>
@@ -284,7 +284,7 @@ const Field: React.FC<{
       className={`text-sm leading-snug text-slate-100 ${mono ? "font-mono text-[12.5px]" : ""} ${
         italic ? "italic text-slate-300" : ""
       } ${quote ? "border-l-2 pl-2" : ""}`}
-      style={quote && accent ? { borderColor: accent } : quote ? { borderColor: "#FF6A00" } : undefined}
+      style={quote && accent ? { borderColor: accent } : quote ? { borderColor: "#DC2626" } : undefined}
     >
       {value}
     </div>

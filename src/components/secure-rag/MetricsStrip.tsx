@@ -8,16 +8,16 @@ interface MetricsStripProps {
 }
 
 /**
- * MetricsStrip — compact horizontal strip of real-time security metrics.
+ * MetricsStrip â€” compact horizontal strip of real-time security metrics.
  * Uses animated count-up transitions. Wire to backend metrics endpoint later.
  */
 const MetricsStrip: React.FC<MetricsStripProps> = ({ metrics }) => {
   const items: { key: string; label: string; value: number; suffix?: string; color: string }[] = [
     { key: "scanned", label: "Requests Scanned", value: metrics.requestsScanned, color: "#A1A1A1" },
-    { key: "threats", label: "Threats Detected", value: metrics.threatsDetected, color: "#F59E0B" },
+    { key: "threats", label: "Threats Detected", value: metrics.threatsDetected, color: "#F87171" },
     { key: "blocked", label: "Actions Blocked", value: metrics.actionsBlocked, color: "#EF4444" },
-    { key: "approvals", label: "Human Approvals", value: metrics.humanApprovals, color: "#FF6A00" },
-    { key: "latency", label: "Average Latency", value: metrics.averageLatencyMs, suffix: "ms", color: "#22C55E" },
+    { key: "approvals", label: "Human Approvals", value: metrics.humanApprovals, color: "#DC2626" },
+    { key: "latency", label: "Average Latency", value: metrics.averageLatencyMs, suffix: "ms", color: "#EF4444" },
   ];
 
   return (
@@ -43,7 +43,7 @@ const MetricsStrip: React.FC<MetricsStripProps> = ({ metrics }) => {
   );
 };
 
-/** Animated count-up hook — animates from 0 to value on mount. */
+/** Animated count-up hook â€” animates from 0 to value on mount. */
 const CountUp: React.FC<{ value: number; suffix?: string; color: string }> = ({
   value,
   suffix = "",

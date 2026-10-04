@@ -13,21 +13,21 @@ const TONE_META: Record<
   { color: string; text: string; chipBg: string; bar: string; glow: string }
 > = {
   good: {
-    color: "#22C55E",
+    color: "#EF4444",
     text: "text-status-allow",
     chipBg: "bg-status-allow/10",
     bar: "bg-status-allow",
     glow: "shadow-glow-green",
   },
   warn: {
-    color: "#F59E0B",
+    color: "#F87171",
     text: "text-status-warn",
     chipBg: "bg-status-warn/10",
     bar: "bg-status-warn",
     glow: "shadow-glow-yellow",
   },
   info: {
-    color: "#FF6A00",
+    color: "#DC2626",
     text: "text-accent-blue-bright",
     chipBg: "bg-accent-blue/10",
     bar: "bg-accent-blue",
@@ -110,11 +110,11 @@ const TrendBadge: React.FC<NonNullable<MetricCard["trend"]>> = ({
   direction,
   goodWhenUp,
 }) => {
-  // good = green, bad = red — based on direction + goodWhenUp
+  // good = green, bad = red â€” based on direction + goodWhenUp
   const isUp = direction === "up";
   const isFlat = direction === "flat";
   const positive = goodWhenUp ? isUp : !isUp;
-  const color = isFlat ? "#A1A1A1" : positive ? "#22C55E" : "#EF4444";
+  const color = isFlat ? "#A1A1A1" : positive ? "#EF4444" : "#EF4444";
   const bg = isFlat ? "bg-ink-800" : positive ? "bg-status-allow/10" : "bg-status-block/10";
   return (
     <span

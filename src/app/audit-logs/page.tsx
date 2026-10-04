@@ -6,22 +6,24 @@ import PageShell from "@/components/secure-rag/PageShell";
 import Reveal from "@/components/secure-rag/Reveal";
 import {
   getAuditEvents,
+  ingestBackendAuditEvents,
   subscribeAuditEvents,
   type RealAuditEvent,
 } from "@/lib/auditEventStore";
+import { fetchAuditEvents } from "@/lib/api/backendClient";
 
 type TableRow = RealAuditEvent;
 
 const DECISION_COLOR: Record<string, string> = {
-  ALLOW: "#22C55E",
+  ALLOW: "#EF4444",
   BLOCK: "#EF4444",
-  "ASK HUMAN": "#F59E0B",
+  "ASK HUMAN": "#F87171",
 };
 
 const STATUS_COLOR: Record<AuditStatus, string> = {
-  info: "#FF6A00",
-  success: "#22C55E",
-  warning: "#F59E0B",
+  info: "#DC2626",
+  success: "#EF4444",
+  warning: "#F87171",
   danger: "#EF4444",
 };
 
@@ -39,7 +41,7 @@ function fmtTime(iso: string): string {
     hour12: false,
     timeZone: "UTC",
   });
-  return `${date} · ${time}`;
+  return `${date} - ${time}`;
 }
 
 const COLUMNS: { key: string; label: string; className?: string }[] = [
@@ -58,14 +60,45 @@ export default function AuditLogsPage() {
   const [riskFilter, setRiskFilter] = useState("all");
   const [decisionFilter, setDecisionFilter] = useState("all");
   const [selectedRow, setSelectedRow] = useState<TableRow | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
 
   // Load initial events and subscribe to live updates
   useEffect(() => {
+    let active = true;
+    const refresh = () => {
+      fetchAuditEvents()
+        .then((events) => {
+          if (!active) return;
+          ingestBackendAuditEvents(events);
+          setRows(getAuditEvents());
+          setLoadError("");
+        })
+        .catch((error) => {
+          if (!active) return;
+          setLoadError(error instanceof Error ? error.message : "Audit log service unavailable.");
+          setRows(getAuditEvents());
+        })
+        .finally(() => {
+          if (active) setLoading(false);
+        });
+    };
     setRows(getAuditEvents());
+    refresh();
+    const interval = window.setInterval(refresh, 2000);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") refresh();
+    };
+    document.addEventListener("visibilitychange", onVisible);
     const unsub = subscribeAuditEvents((updated) => {
       setRows(updated);
     });
-    return unsub;
+    return () => {
+      active = false;
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisible);
+      unsub();
+    };
   }, []);
 
   const filtered = rows.filter((r) => {
@@ -125,13 +158,13 @@ export default function AuditLogsPage() {
                   onClick={exportJSON}
                   className="btn btn-ghost text-xs px-3.5 py-1.5 font-bold"
                 >
-                  📥 Export JSON
+                  Export JSON
                 </button>
                 <input
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search logs, tools, policies…"
+                  placeholder="Search logs, tools, policies..."
                   className="input-base w-44 rounded-lg py-1.5 text-[12.5px] md:w-56"
                 />
                 <select
@@ -177,7 +210,11 @@ export default function AuditLogsPage() {
                   {filtered.length === 0 ? (
                     <tr>
                       <td colSpan={7} className="px-6 py-8 text-center text-sm text-slate-500">
-                        {rows.length === 0
+                        {loading
+                          ? "Loading audit events..."
+                          : loadError
+                            ? loadError
+                            : rows.length === 0
                           ? "No audit events yet. Run an execution in the Playground to generate real security events."
                           : "No audit events matching the selected filter criteria."}
                       </td>
@@ -264,7 +301,7 @@ export default function AuditLogsPage() {
                   style={{ background: STATUS_COLOR[selectedRow.status] }}
                 />
                 <h3 className="text-lg font-bold text-white">
-                  Audit Log Deep Inspection · {selectedRow.id}
+                  Audit Log Deep Inspection - {selectedRow.id}
                 </h3>
               </div>
               <button
@@ -272,7 +309,7 @@ export default function AuditLogsPage() {
                 onClick={() => setSelectedRow(null)}
                 className="text-xs font-bold text-slate-400 hover:text-white"
               >
-                ✕ Close
+                Close
               </button>
             </div>
 

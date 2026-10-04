@@ -6,6 +6,8 @@ import healthRoutes from './routes/health.routes';
 import agentRoutes from './routes/agent.routes';
 import uploadRoutes from './routes/upload.routes';
 import evaluationRoutes from './routes/evaluation.routes';
+import mlRoutes from './routes/ml.routes';
+import auditRoutes from './routes/audit.routes';
 import { errorHandler } from './middleware/errorHandler';
 import { setupWebSocket } from './websocket/socket';
 
@@ -23,6 +25,8 @@ app.use('/api', healthRoutes);
 app.use('/api/agent', agentRoutes);
 app.use('/api', uploadRoutes);
 app.use('/api/evaluation', evaluationRoutes);
+app.use('/api/ml', mlRoutes);
+app.use('/api/audit', auditRoutes);
 
 
 // Centralized error handler

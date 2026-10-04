@@ -12,10 +12,10 @@ const SEVERITY_META: Record<
   EventSeverity,
   { color: string; bg: string; border: string; dot: string }
 > = {
-  LOW: { color: "#22C55E", bg: "bg-status-allow/10", border: "border-status-allow/30", dot: "✓" },
-  MEDIUM: { color: "#F59E0B", bg: "bg-status-warn/10", border: "border-status-warn/30", dot: "⚠" },
-  HIGH: { color: "#EF4444", bg: "bg-status-block/10", border: "border-status-block/30", dot: "🛑" },
-  CRITICAL: { color: "#EF4444", bg: "bg-status-block/15", border: "border-status-block/50", dot: "🛑" },
+  LOW: { color: "#EF4444", bg: "bg-status-allow/10", border: "border-status-allow/30", dot: "OK" },
+  MEDIUM: { color: "#F87171", bg: "bg-status-warn/10", border: "border-status-warn/30", dot: "WARN" },
+  HIGH: { color: "#EF4444", bg: "bg-status-block/10", border: "border-status-block/30", dot: "BLOCK" },
+  CRITICAL: { color: "#EF4444", bg: "bg-status-block/15", border: "border-status-block/50", dot: "BLOCK" },
 };
 
 function fmtTime(iso: string): string {

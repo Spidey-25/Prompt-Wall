@@ -3,14 +3,14 @@
 import React from "react";
 
 /**
- * PROMPTWALL brand wordmark — recreated as styled HTML using the
+ * PROMPTWALL brand wordmark â€” recreated as styled HTML using the
  * uploaded wordmark image as design inspiration.
  *
- *   • "PROMPT"  — slate-800 (neutral)
- *   • "WALL"    — orange→amber gradient text (warm accent)
- *   • Star ✦  icon inline between the two halves (suggests AI/sparkle)
- *   • Lightning bolt ⚡ as a flourish at the end (energy/dynamism)
- *   • Slash accent on the leading "P" (forward momentum)
+ *   â€¢ "PROMPT"  â€” slate-800 (neutral)
+ *   â€¢ "WALL"    â€” redâ†’amber gradient text (warm accent)
+ *   - Star icon inline between the two halves (suggests AI/sparkle)
+ *   â€¢ Lightning bolt âš¡ as a flourish at the end (energy/dynamism)
+ *   â€¢ Slash accent on the leading "P" (forward momentum)
  *
  * The brand-mark image lives at /brand-wordmark.png and is used by the
  * floating bottom panel for the full-resolution treatment.
@@ -84,7 +84,7 @@ const BrandWordmark: React.FC<BrandWordmarkProps> = ({
       <span
         className={`inline-flex items-center gap-1 font-extrabold tracking-tight ${textCls} ${className}`}
       >
-        {/* Slash accent — orange leading bar */}
+        {/* Slash accent â€” red leading bar */}
         <span
           className="inline-block h-[1em] w-[3px] -mr-0.5 self-center rounded-full"
           style={{
@@ -94,18 +94,18 @@ const BrandWordmark: React.FC<BrandWordmarkProps> = ({
           }}
           aria-hidden
         />
-        {/* "PROMPT" — neutral text (slate-900 in light theme, white in dark theme) */}
+        {/* "PROMPT" â€” neutral text (slate-900 in light theme, white in dark theme) */}
         <span className="text-slate-900 dark:text-slate-100 text-shadow-soft">PROMPT</span>
 
-        {/* Inline star ✦ — orange accent (suggests AI sparkle) */}
+        {/* Inline star - red accent (suggests AI sparkle) */}
         <span className="text-accent-blue -mx-0.5 inline-flex items-center self-center">
           <StarIcon size={iconSize} />
         </span>
 
-        {/* "WALL" — orange→amber gradient */}
+        {/* "WALL" â€” redâ†’amber gradient */}
         <span className="text-gradient-warm">WALL</span>
 
-        {/* Trailing lightning bolt — orange flourish */}
+        {/* Trailing lightning bolt â€” red flourish */}
         <span className="ml-1 inline-flex items-center self-center text-accent-blue">
           <BoltIcon size={iconSize} />
         </span>

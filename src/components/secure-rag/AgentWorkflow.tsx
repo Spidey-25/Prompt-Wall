@@ -63,7 +63,7 @@ const STATUS_META: Record<
     label: "Pending",
   },
   Running: {
-    color: "#FF6A00",
+    color: "#DC2626",
     ring: "border-accent-blue",
     bg: "bg-accent-blue/15",
     text: "text-accent-blue",
@@ -71,10 +71,10 @@ const STATUS_META: Record<
     label: "Processing",
   },
   Passed: {
-    color: "#22C55E",
-    ring: "border-status-allow/50",
-    bg: "bg-status-allow/10",
-    text: "text-status-allow",
+    color: "#A1A1A1",
+    ring: "border-ink-600",
+    bg: "bg-ink-850",
+    text: "text-slate-300",
     icon: CheckIcon,
     label: "Passed",
   },
@@ -87,7 +87,7 @@ const STATUS_META: Record<
     label: "Blocked",
   },
   Warning: {
-    color: "#F59E0B",
+    color: "#F87171",
     ring: "border-status-warn/50",
     bg: "bg-status-warn/10",
     text: "text-status-warn",
@@ -103,7 +103,7 @@ const STATUS_META: Record<
     label: "Failed",
   },
   "Waiting for Approval": {
-    color: "#F59E0B",
+    color: "#F87171",
     ring: "border-status-warn/50",
     bg: "bg-status-warn/10",
     text: "text-status-warn",
@@ -123,7 +123,7 @@ const AgentWorkflow: React.FC<AgentWorkflowProps> = ({ stages }) => {
   const progressPct = Math.round((passedCount / stages.length) * 100);
 
   return (
-    <section className="card card-pad h-full flex flex-col justify-between">
+    <section className="relative flex h-full flex-col justify-between">
       {/* Header with Title & Progress */}
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div>
@@ -133,9 +133,6 @@ const AgentWorkflow: React.FC<AgentWorkflowProps> = ({ stages }) => {
               Real-Time Security Graph
             </span>
           </div>
-          <p className="mt-1 text-xs text-slate-400">
-            Interactive multi-stage agent pipeline with content firewall &amp; action guardrails.
-          </p>
         </div>
 
         <div className="flex items-center gap-4">
@@ -146,7 +143,7 @@ const AgentWorkflow: React.FC<AgentWorkflowProps> = ({ stages }) => {
                 className="h-full transition-all duration-500 rounded-full"
                 style={{
                   width: `${progressPct}%`,
-                  backgroundImage: "linear-gradient(90deg, #FF6A00, #22C55E)",
+                  backgroundImage: "linear-gradient(90deg, #DC2626, #EF4444)",
                 }}
               />
             </div>
@@ -191,7 +188,7 @@ const AgentWorkflow: React.FC<AgentWorkflowProps> = ({ stages }) => {
               onClick={() => setSelectedStage(null)}
               className="text-xs font-bold text-slate-400 hover:text-white"
             >
-              ✕ Close Detail
+              Close Detail
             </button>
           </div>
 
@@ -233,11 +230,6 @@ const AgentWorkflow: React.FC<AgentWorkflowProps> = ({ stages }) => {
         </div>
       )}
 
-      {/* Footer hint */}
-      <div className="mt-3 flex items-center justify-between text-[11px] text-slate-500">
-        <span>💡 Click any node above to inspect detailed security policy telemetry &amp; trace data.</span>
-        <span className="font-mono text-[10px]">PROMPTWALL Workflow Pipeline v2.0</span>
-      </div>
     </section>
   );
 };
@@ -265,6 +257,8 @@ const StageNodeCard: React.FC<{
       onClick={onSelect}
       className={`hover-lift relative flex flex-col items-center gap-2 rounded-xl border ${meta.ring} ${meta.bg} p-3 text-center cursor-pointer ${activeClasses} animate-fade-in-up w-full text-left`}
       style={{
+        borderTopColor: isActive || stage.status === "Passed" ? meta.color : undefined,
+        backgroundImage: "linear-gradient(135deg, rgba(255,255,255,0.04), transparent 55%)",
         boxShadow: isActive ? "var(--shadow-glow)" : "var(--shadow-3d-sm)",
         transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)",
       }}
@@ -296,7 +290,27 @@ const StageNodeCard: React.FC<{
       </div>
 
       {/* Node Label */}
-      <div className="text-[12.5px] font-bold leading-tight text-white line-clamp-1">
+      <div
+        className={`stage-label-flow text-[12.5px] font-bold leading-tight line-clamp-1 ${
+          stage.status === "Passed" ? "stage-label-complete" : ""
+        }`}
+        style={{
+          color:
+            stage.status === "Passed" || stage.status === "Running"
+              ? "transparent"
+              : "#FFFFFF",
+          backgroundImage:
+            stage.status === "Running"
+              ? "linear-gradient(90deg, #FFFFFF 0%, #FFFFFF 35%, #EF4444 50%, #FFFFFF 65%, #FFFFFF 100%)"
+              : stage.status === "Passed"
+                ? "linear-gradient(90deg, #EF4444 0%, #F87171 50%, #EF4444 100%)"
+                : undefined,
+          backgroundSize: stage.status === "Running" ? "220% 100%" : "100% 100%",
+          backgroundPosition: stage.status === "Passed" ? "100% 0" : undefined,
+          WebkitBackgroundClip: stage.status === "Passed" || stage.status === "Running" ? "text" : undefined,
+          backgroundClip: stage.status === "Passed" || stage.status === "Running" ? "text" : undefined,
+        }}
+      >
         {stage.label}
       </div>
 

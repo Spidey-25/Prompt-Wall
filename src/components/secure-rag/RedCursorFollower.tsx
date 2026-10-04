@@ -3,11 +3,11 @@
 import React, { useEffect, useRef, useState } from "react";
 
 /**
- * OrangeCursorFollower — a minimal trailing color smear effect.
- * No ball or ring; just a soft orange↔white radial glow that smoothly
+ * RedCursorFollower â€” a minimal trailing color smear effect.
+ * No ball or ring; just a soft redâ†”white radial glow that smoothly
  * trails the cursor using requestAnimationFrame lerp.
  */
-const OrangeCursorFollower: React.FC = () => {
+const RedCursorFollower: React.FC = () => {
   const [pos, setPos] = useState({ x: -200, y: -200 });
   const trailRef = useRef({ x: -200, y: -200 });
   const animRef = useRef<number | null>(null);
@@ -63,7 +63,7 @@ const OrangeCursorFollower: React.FC = () => {
 
   return (
     <div className="pointer-events-none fixed inset-0 z-[9999] overflow-hidden">
-      {/* Trailing soft smear — slightly behind cursor, orange core */}
+      {/* Trailing soft smear â€” slightly behind cursor, red core */}
       <div
         style={{
           position: "fixed",
@@ -82,7 +82,7 @@ const OrangeCursorFollower: React.FC = () => {
         }}
       />
 
-      {/* Sharp leading dot — exactly on cursor, white center + orange halo */}
+      {/* Sharp leading dot â€” exactly on cursor, white center + red halo */}
       <div
         style={{
           position: "fixed",
@@ -92,7 +92,7 @@ const OrangeCursorFollower: React.FC = () => {
           height: 6,
           transform: "translate(-50%, -50%)",
           borderRadius: "50%",
-          background: "radial-gradient(circle, #FFFFFF 0%, #FF6A00 60%, transparent 100%)",
+          background: "radial-gradient(circle, #FFFFFF 0%, #DC2626 60%, transparent 100%)",
           boxShadow: "0 0 6px 2px rgba(255,106,0,0.55), 0 0 2px 1px rgba(255,255,255,0.8)",
           pointerEvents: "none",
         }}
@@ -101,4 +101,4 @@ const OrangeCursorFollower: React.FC = () => {
   );
 };
 
-export default OrangeCursorFollower;
+export default RedCursorFollower;

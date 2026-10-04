@@ -1,4 +1,5 @@
 import os
+import re
 from typing import List, Dict, Any
 from .loader import DocumentLoader
 from .chunker import TextChunker
@@ -21,4 +22,15 @@ class RAGPipeline:
     def retrieve(self, query: str, top_k: int = 3) -> List[Dict[str, Any]]:
         if not self._is_initialized:
             self.initialize()
-        return self.vector_store.similarity_search(query, top_k=top_k)
+        results = self.vector_store.similarity_search(query, top_k=top_k)
+        if re.search(r"\b[\w\-.+]+\.(?:txt|pdf|csv|md|json|log|docx)\b", query, re.IGNORECASE):
+            return results
+        return [
+            result
+            for result in results
+            if not re.search(
+                r"(prompt[_ -]?injection|jailbreak|attack|malicious|ignore all previous instructions|injection_detected|begin harmless prompt-injection)",
+                f"{result.get('source_id', '')}\n{result.get('text', '')}",
+                re.IGNORECASE,
+            )
+        ]

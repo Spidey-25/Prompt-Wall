@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PlayIcon, BoltIcon, XIcon, SpinnerIcon } from "./icons";
 import { triggerConfetti, triggerThreatAlertEffect } from "@/lib/effects/confetti";
 import { uploadBackendFiles } from "@/lib/api/backendClient";
+import { loadWorkspace, subscribeWorkspace, updateWorkspace } from "@/lib/workspace";
 
 interface UserRequestProps {
   onRun: (prompt: string, options?: { securityLevel?: string; allowedTools?: string[] }) => void;
@@ -19,9 +20,7 @@ const AVAILABLE_TOOLS = [
 ];
 
 const UserRequest: React.FC<UserRequestProps> = ({ onRun, disabled }) => {
-  const [prompt, setPrompt] = useState(
-    "Compare these vendor quotations and identify the cheapest supplier."
-  );
+  const [prompt, setPrompt] = useState("");
   const [securityLevel, setSecurityLevel] = useState<string>("strict");
   const [selectedTools, setSelectedTools] = useState<string[]>(
     AVAILABLE_TOOLS.filter((t) => t.default).map((t) => t.id)
@@ -32,6 +31,20 @@ const UserRequest: React.FC<UserRequestProps> = ({ onRun, disabled }) => {
   const [attachments, setAttachments] = useState<{ name: string; size: string }[]>([]);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    let active = true;
+    loadWorkspace().then((workspace) => {
+      if (active && !prompt) setPrompt(workspace.prompt);
+    }).catch(() => undefined);
+    const unsubscribe = subscribeWorkspace((workspace) => {
+      setPrompt(workspace.prompt);
+    });
+    return () => {
+      active = false;
+      unsubscribe();
+    };
+  }, []);
 
   // Live vulnerability analysis of user input
   const threatAnalysis = useMemo(() => {
@@ -48,9 +61,9 @@ const UserRequest: React.FC<UserRequestProps> = ({ onRun, disabled }) => {
     if (matchCount >= 2 || text.includes("ignore all") || text.includes("[system]") || text.includes("external-collector")) {
       return { level: "high", score: 95, label: "High Threat Injection Detected", color: "#EF4444" };
     } else if (matchCount === 1) {
-      return { level: "medium", score: 55, label: "Suspicious Pattern Detected", color: "#F59E0B" };
+      return { level: "medium", score: 55, label: "Suspicious Pattern Detected", color: "#F87171" };
     }
-    return { level: "low", score: 10, label: "Safe / Low Risk Query", color: "#22C55E" };
+    return { level: "low", score: 10, label: "Safe / Low Risk Query", color: "#EF4444" };
   }, [prompt]);
 
   const toggleTool = (id: string) => {
@@ -82,9 +95,6 @@ const UserRequest: React.FC<UserRequestProps> = ({ onRun, disabled }) => {
       };
 
       recognition.onerror = () => {
-        setPrompt(
-          "Compare quarterly vendor price proposals for server hosting and flag any unapproved external email transfers."
-        );
         setIsListening(false);
       };
 
@@ -92,9 +102,6 @@ const UserRequest: React.FC<UserRequestProps> = ({ onRun, disabled }) => {
       recognition.start();
     } else {
       setTimeout(() => {
-        setPrompt(
-          "Compare quarterly vendor price proposals for server hosting and flag any unapproved external email transfers."
-        );
         setIsListening(false);
       }, 1400);
     }
@@ -212,7 +219,7 @@ const UserRequest: React.FC<UserRequestProps> = ({ onRun, disabled }) => {
           {isDraggingOver && (
             <div className="absolute inset-0 z-20 flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-accent-blue bg-ink-900/90 backdrop-blur-sm p-4 text-center">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent-blue/20 text-accent-blue mb-2 animate-bounce">
-                📄
+                File
               </div>
               <p className="text-sm font-bold text-white">Drop files here to attach</p>
               <p className="text-xs text-slate-400 mt-1">Files will be attached to your agent prompt context</p>
@@ -221,9 +228,12 @@ const UserRequest: React.FC<UserRequestProps> = ({ onRun, disabled }) => {
 
           <textarea
             className="input-base min-h-[140px] resize-y pr-12 font-mono text-[13px] leading-relaxed"
-            placeholder="Type your instruction or drag & drop documents/datasets directly into this box…"
+            placeholder="Type your instruction or drag and drop documents or datasets into this box..."
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
+            onBlur={() => {
+              void updateWorkspace({ prompt });
+            }}
             onKeyDown={onKeyDown}
             disabled={disabled}
             spellCheck={false}
@@ -235,7 +245,7 @@ const UserRequest: React.FC<UserRequestProps> = ({ onRun, disabled }) => {
           {/* Real-time stats & word count */}
           <div className="pointer-events-none absolute bottom-2.5 right-3 flex items-center gap-3 font-mono text-[10.5px] text-slate-500">
             <span>{prompt.trim().split(/\s+/).filter(Boolean).length} words</span>
-            <span>·</span>
+              <span>-</span>
             <span>{prompt.length} chars</span>
           </div>
         </div>
@@ -256,13 +266,13 @@ const UserRequest: React.FC<UserRequestProps> = ({ onRun, disabled }) => {
                 key={idx}
                 className="chip border border-accent-blue/40 bg-accent-blue/15 text-accent-blue font-mono text-[11px] font-bold"
               >
-                📄 {file.name} ({file.size})
+                File: {file.name} ({file.size})
                 <button
                   type="button"
                   onClick={() => removeAttachment(idx)}
                   className="ml-1.5 text-slate-400 hover:text-status-block font-bold"
                 >
-                  ✕
+                  Remove
                 </button>
               </span>
             ))}
@@ -283,7 +293,7 @@ const UserRequest: React.FC<UserRequestProps> = ({ onRun, disabled }) => {
               }`}
               title="Dictate prompt via Voice Input"
             >
-              {isListening ? "🔴 Listening..." : "🎤 Voice Input"}
+              {isListening ? "Listening..." : "Voice Input"}
             </button>
 
             <button
@@ -293,7 +303,7 @@ const UserRequest: React.FC<UserRequestProps> = ({ onRun, disabled }) => {
               className="rounded border border-accent-blue/40 bg-accent-blue/10 px-2.5 py-1 font-semibold text-accent-blue hover:bg-accent-blue/20 transition-all"
               title="Attach document or dataset for security audit"
             >
-              📎 Attach File
+              Attach File
             </button>
 
             <input
@@ -328,7 +338,7 @@ const UserRequest: React.FC<UserRequestProps> = ({ onRun, disabled }) => {
               disabled={!prompt.trim()}
               className="rounded border border-ink-600 bg-ink-850 px-2 py-1 text-slate-400 hover:text-white hover:border-slate-500"
             >
-              {copied ? "✓ Copied!" : "📋 Copy"}
+              {copied ? "Copied" : "Copy"}
             </button>
           </div>
 
@@ -338,7 +348,7 @@ const UserRequest: React.FC<UserRequestProps> = ({ onRun, disabled }) => {
             onClick={() => setShowAdvancedInputOptions(!showAdvancedInputOptions)}
             className="text-accent-blue hover:underline font-medium"
           >
-            {showAdvancedInputOptions ? "▲ Hide Configuration Options" : "▼ Advanced Security & Tool Options"}
+            {showAdvancedInputOptions ? "Hide Configuration Options" : "Advanced Security and Tool Options"}
           </button>
         </div>
 
@@ -437,7 +447,7 @@ const UserRequest: React.FC<UserRequestProps> = ({ onRun, disabled }) => {
             {disabled ? (
               <>
                 <SpinnerIcon size={16} />
-                Executing Pipeline…
+                Executing Pipeline...
               </>
             ) : (
               <>

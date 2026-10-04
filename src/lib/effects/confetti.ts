@@ -17,9 +17,9 @@ export function triggerConfetti(options?: {
   const originX = options?.origin?.x ?? 0.5;
   const originY = options?.origin?.y ?? 0.5;
   const colors = options?.colors ?? [
-    "#22C55E", // Safe green
-    "#FF6A00", // PromptWall orange
-    "#FFC21A", // Accent gold
+    "#EF4444", // Safe green
+    "#DC2626", // PromptWall red
+    "#F87171", // Accent gold
     "#3B82F6", // Accent blue
     "#EC4899", // Vivid pink
   ];
@@ -147,13 +147,13 @@ function createCustomCanvasConfetti(
 }
 
 /**
- * Trigger threat alert particle effect (Red/Orange warning pulse)
+ * Trigger threat alert particle effect (Red/Red warning pulse)
  */
 export function triggerThreatAlertEffect() {
   triggerConfetti({
     particleCount: 40,
     spread: 90,
     origin: { x: 0.5, y: 0.4 },
-    colors: ["#EF4444", "#F59E0B", "#DC2626", "#FF6A00"],
+    colors: ["#EF4444", "#F87171", "#DC2626", "#DC2626"],
   });
 }

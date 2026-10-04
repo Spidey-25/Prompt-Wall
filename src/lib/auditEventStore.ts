@@ -67,7 +67,10 @@ export function getAuditEvents(): RealAuditEvent[] {
 export function appendAuditEvents(newEvents: RealAuditEvent[]): void {
   if (!newEvents.length) return;
   const current = loadFromStorage();
-  const updated = [...newEvents, ...current];
+  const existingIds = new Set(current.map((event) => event.id));
+  const uniqueNewEvents = newEvents.filter((event) => !existingIds.has(event.id));
+  if (!uniqueNewEvents.length) return;
+  const updated = [...uniqueNewEvents, ...current];
   saveToStorage(updated);
   notifyListeners();
 }

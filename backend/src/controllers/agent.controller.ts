@@ -37,6 +37,11 @@ export class AgentController {
           return;
         }
 
+        const mlResult = await PythonService.mlPredict(message.trim()).catch(() => null);
+        if (mlResult) {
+          pipeline.ml_result = mlResult;
+        }
+
         const firewall = pipeline.firewall_result || {};
         const guard = pipeline.action_guard_result || {};
         const safe =
@@ -57,8 +62,9 @@ export class AgentController {
 
         const approvedTask =
           pipeline.scope?.raw_user_request?.trim() || message.trim();
-        const chat = await ClaudeService.answerFromApprovedContext(
-          pipeline.retrieved_context || [],
+        const ragContext = pipeline.retrieved_context || [];
+        const chat = await ClaudeService.answerFromRagContext(
+          ragContext,
           approvedTask
         );
         if (!chat.success) {

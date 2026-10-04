@@ -19,8 +19,8 @@ const STATUS_META: Record<
   BackendStatus,
   { color: string; label: string; pulse: boolean }
 > = {
-  Connected: { color: "#22C55E", label: "Live System", pulse: false },
-  Connecting: { color: "#F59E0B", label: "Connecting", pulse: true },
+  Connected: { color: "#EF4444", label: "Live System", pulse: false },
+  Connecting: { color: "#F87171", label: "Connecting", pulse: true },
   Disconnected: { color: "#EF4444", label: "Offline", pulse: true },
 };
 
@@ -95,9 +95,9 @@ const NavLink: React.FC<{ href: string; label: string; active: boolean }> = ({
           className="absolute inset-0 rounded-lg"
           style={{
             background:
-              "linear-gradient(135deg, rgba(255, 106, 0, 0.22), rgba(255, 194, 26, 0.14))",
+              "linear-gradient(135deg, rgba(220, 38, 38, 0.22), rgba(248, 113, 113, 0.14))",
             boxShadow:
-              "inset 0 1px 0 0 rgba(255, 255, 255, 0.08), 0 0 0 1px rgba(255, 106, 0, 0.40), 0 0 14px -2px rgba(255, 106, 0, 0.30)",
+              "inset 0 1px 0 0 rgba(255, 255, 255, 0.08), 0 0 0 1px rgba(220, 38, 38, 0.40), 0 0 14px -2px rgba(220, 38, 38, 0.30)",
           }}
           transition={{ type: "spring", stiffness: 380, damping: 30 }}
         />
@@ -154,7 +154,7 @@ const TopNav: React.FC<TopNavProps> = ({ status, approvalsPending = 0 }) => {
       className="sticky top-3 z-30 mb-6 rounded-2xl border border-accent-blue/40 bg-ink-900/85 px-4 py-3 backdrop-blur-xl md:px-5"
       style={{
         boxShadow:
-          "inset 0 1px 0 0 rgba(255, 255, 255, 0.15), 0 0 24px -2px rgba(255, 106, 0, 0.35), 0 8px 32px -8px rgba(0, 0, 0, 0.5)",
+          "inset 0 1px 0 0 rgba(255, 255, 255, 0.15), 0 0 24px -2px rgba(220, 38, 38, 0.35), 0 8px 32px -8px rgba(0, 0, 0, 0.5)",
         transition: "box-shadow 300ms ease, border-color 300ms ease",
       }}
     >
@@ -164,8 +164,8 @@ const TopNav: React.FC<TopNavProps> = ({ status, approvalsPending = 0 }) => {
           className="h-full w-1/3 rounded-full"
           style={{
             background:
-              "linear-gradient(90deg, transparent, #FF6A00 40%, #FFC21A 70%, transparent)",
-            boxShadow: "0 0 16px 3px rgba(255, 106, 0, 0.85)",
+              "linear-gradient(90deg, transparent, #DC2626 40%, #F87171 70%, transparent)",
+            boxShadow: "0 0 16px 3px rgba(220, 38, 38, 0.85)",
           }}
           animate={{ x: ["-100%", "350%"] }}
           transition={{ repeat: Infinity, duration: 3.2, ease: "linear" }}
@@ -177,7 +177,7 @@ const TopNav: React.FC<TopNavProps> = ({ status, approvalsPending = 0 }) => {
         className="pointer-events-none absolute inset-0 rounded-2xl transition-opacity duration-300"
         style={{
           opacity: glow.visible ? 1 : 0,
-          background: `radial-gradient(280px 80px at ${glow.x}px ${glow.y}px, rgba(255, 106, 0, 0.20), transparent 70%)`,
+          background: `radial-gradient(280px 80px at ${glow.x}px ${glow.y}px, rgba(220, 38, 38, 0.20), transparent 70%)`,
         }}
       />
 
@@ -188,7 +188,7 @@ const TopNav: React.FC<TopNavProps> = ({ status, approvalsPending = 0 }) => {
             href="/"
             className="flex items-center gap-3 transition-transform hover:scale-[1.02]"
           >
-            {/* SVG Shield Icon — no image dependency */}
+            {/* SVG Shield Icon â€” no image dependency */}
             <div className="logo-emblem flex h-8 w-8 items-center justify-center rounded-lg shrink-0">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent-blue">
                 <path d="M12 3l8 3v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-3z" />
@@ -266,11 +266,11 @@ const TopNav: React.FC<TopNavProps> = ({ status, approvalsPending = 0 }) => {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search security policies, agents, logs…"
+              placeholder="Search security policies, agents, logs..."
               className="input-base w-48 rounded-lg py-1.5 pl-9 pr-12 text-[12.5px] md:w-56"
             />
             <kbd className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 rounded border border-ink-600 bg-ink-850 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-500">
-              ⌘K
+              Ctrl+K
             </kbd>
           </div>
 
@@ -295,7 +295,7 @@ const TopNav: React.FC<TopNavProps> = ({ status, approvalsPending = 0 }) => {
             <BellIcon size={15} />
             <span
               className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-accent-blue"
-              style={{ boxShadow: "0 0 6px rgba(255, 106, 0, 0.7)" }}
+              style={{ boxShadow: "0 0 6px rgba(220, 38, 38, 0.7)" }}
             />
           </button>
         </div>

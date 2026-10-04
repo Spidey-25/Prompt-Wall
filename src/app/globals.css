@@ -44,19 +44,19 @@
   --radius-xl: calc(var(--radius) + 4px);
 
   /* ---- PROMPTWALL dark palette (derived from the logo) ---- */
-  /* ink = black surfaces (page bg → card → elevated → hover) */
-  --color-ink-950: #050505;   /* page background — deep black */
-  --color-ink-900: #0B0B0B;   /* card surface — near black */
+  /* ink = black surfaces (page bg â†’ card â†’ elevated â†’ hover) */
+  --color-ink-950: #050505;   /* page background â€” deep black */
+  --color-ink-900: #0B0B0B;   /* card surface â€” near black */
   --color-ink-850: #111111;   /* elevated card / input surface */
   --color-ink-800: #161616;   /* hover surface */
   --color-ink-700: #1F1F1F;   /* border surface */
   --color-ink-600: #292929;   /* border gray */
 
-  /* accent = orange → gold (from the logo's M gradient) */
-  --color-accent-blue: #FF6A00;        /* bright orange */
-  --color-accent-blue-bright: #FF8A00; /* orange */
-  --color-accent-purple: #FFC21A;      /* golden yellow */
-  --color-accent-purple-bright: #FFD700;
+  /* accent = red â†’ gold (from the logo's M gradient) */
+  --color-accent-blue: #DC2626;        /* bright red */
+  --color-accent-blue-bright: #EF4444; /* red */
+  --color-accent-purple: #F87171;      /* golden yellow */
+  --color-accent-purple-bright: #FCA5A5;
 
   /* semantic text */
   --color-text-primary: #FFFFFF;
@@ -64,13 +64,13 @@
   --color-text-muted: #6B6B6B;
 
   /* Status colors (security states) */
-  --color-status-allow: #22C55E;    /* SAFE / ALLOW — green */
-  --color-status-block: #EF4444;    /* BLOCK / THREAT — red */
-  --color-status-warn: #F59E0B;     /* WARNING / ASK HUMAN — amber */
-  --color-status-pending: #A1A1A1;   /* PENDING — muted gray */
-  --color-status-running: #FF6A00;  /* RUNNING — orange */
+  --color-status-allow: #EF4444;    /* SAFE / ALLOW â€” green */
+  --color-status-block: #EF4444;    /* BLOCK / THREAT â€” red */
+  --color-status-warn: #F87171;     /* WARNING / ASK HUMAN â€” amber */
+  --color-status-pending: #A1A1A1;   /* PENDING â€” muted gray */
+  --color-status-running: #DC2626;  /* RUNNING â€” red */
 
-  /* ---- Shadows: dark + subtle orange glow ---- */
+  /* ---- Shadows: dark + subtle red glow ---- */
   --shadow-3d-sm:
     inset 0 1px 0 0 rgba(255, 255, 255, 0.04),
     0 1px 2px 0 rgba(0, 0, 0, 0.40),
@@ -87,12 +87,12 @@
     inset 0 1px 0 0 rgba(255, 255, 255, 0.06),
     0 12px 32px -6px rgba(0, 0, 0, 0.70),
     0 36px 90px -16px rgba(0, 0, 0, 0.60);
-  /* Pressable button shadow: orange-tinted bottom edge */
+  /* Pressable button shadow: red-tinted bottom edge */
   --shadow-3d-button:
     inset 0 1px 0 0 rgba(255, 255, 255, 0.30),
     inset 0 -2px 0 0 rgba(0, 0, 0, 0.25),
-    0 3px 6px -1px rgba(255, 106, 0, 0.45),
-    0 8px 18px -4px rgba(255, 106, 0, 0.30);
+    0 3px 6px -1px rgba(220, 38, 38, 0.45),
+    0 8px 18px -4px rgba(220, 38, 38, 0.30);
   --shadow-3d-button-success:
     inset 0 1px 0 0 rgba(255, 255, 255, 0.30),
     inset 0 -2px 0 0 rgba(0, 0, 0, 0.25),
@@ -104,15 +104,15 @@
     0 3px 6px -1px rgba(239, 68, 68, 0.45),
     0 8px 18px -4px rgba(239, 68, 68, 0.30);
 
-  /* Subtle orange glow around active security elements */
+  /* Subtle red glow around active security elements */
   --shadow-glow:
-    0 0 0 1px rgba(255, 106, 0, 0.25),
-    0 0 20px -2px rgba(255, 106, 0, 0.30),
-    0 8px 32px -8px rgba(255, 106, 0, 0.25);
+    0 0 0 1px rgba(220, 38, 38, 0.25),
+    0 0 20px -2px rgba(220, 38, 38, 0.30),
+    0 8px 32px -8px rgba(220, 38, 38, 0.25);
   --shadow-glow-purple:
-    0 0 0 1px rgba(255, 194, 26, 0.25),
-    0 0 20px -2px rgba(255, 194, 26, 0.30),
-    0 8px 32px -8px rgba(255, 194, 26, 0.25);
+    0 0 0 1px rgba(248, 113, 113, 0.25),
+    0 0 20px -2px rgba(248, 113, 113, 0.30),
+    0 8px 32px -8px rgba(248, 113, 113, 0.25);
   --shadow-glow-red:
     0 0 0 1px rgba(239, 68, 68, 0.30),
     0 0 20px -2px rgba(239, 68, 68, 0.35),
@@ -161,10 +161,26 @@
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
+@keyframes stageLabelWaterFlow {
+  0% { background-position: 0% 0; }
+  100% { background-position: 220% 0; }
+}
+
+.stage-label-flow {
+  transition: color 300ms ease, background-position 500ms ease;
+}
+
+.stage-label-flow:not(.stage-label-complete) {
+  animation: stageLabelWaterFlow 1.8s linear infinite;
+}
+
+.stage-label-complete {
+  text-shadow: 0 0 10px rgba(239, 68, 68, 0.45);
+}
 
 :root {
   --radius: 0.625rem;
-  /* Force dark mode by default — the dashboard is permanently dark */
+  /* Force dark mode by default â€” the dashboard is permanently dark */
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -241,11 +257,11 @@
     height: 100%;
   }
   body {
-    /* Deep black background with very subtle orange/amber corner glows */
+    /* Deep black background with very subtle red/amber corner glows */
     background-color: #050505;
     background-image:
-      radial-gradient(900px 540px at 6% -8%, rgba(255, 106, 0, 0.06), transparent 60%),
-      radial-gradient(760px 460px at 96% -4%, rgba(255, 194, 26, 0.05), transparent 55%),
+      radial-gradient(900px 540px at 6% -8%, rgba(220, 38, 38, 0.06), transparent 60%),
+      radial-gradient(760px 460px at 96% -4%, rgba(248, 113, 113, 0.05), transparent 55%),
       linear-gradient(180deg, #050505 0%, #070707 100%);
     background-attachment: fixed;
     color: #FFFFFF;
@@ -263,13 +279,13 @@
     background: #050505;
   }
   *::-webkit-scrollbar-thumb {
-    background: rgba(255, 106, 0, 0.25);
+    background: rgba(220, 38, 38, 0.25);
     border-radius: 9999px;
     border: 2px solid transparent;
     background-clip: padding-box;
   }
   *::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 106, 0, 0.45);
+    background: rgba(220, 38, 38, 0.45);
     background-clip: padding-box;
   }
 }
@@ -292,8 +308,8 @@ html.light {
 html.light body {
   background-color: #FFFFFF;
   background-image:
-    radial-gradient(900px 540px at 6% -8%, rgba(255, 106, 0, 0.09), transparent 60%),
-    radial-gradient(760px 460px at 96% -4%, rgba(255, 194, 26, 0.08), transparent 55%),
+    radial-gradient(900px 540px at 6% -8%, rgba(220, 38, 38, 0.09), transparent 60%),
+    radial-gradient(760px 460px at 96% -4%, rgba(248, 113, 113, 0.08), transparent 55%),
     linear-gradient(180deg, #FFFFFF 0%, #FFFBF8 100%);
   color: #0F172A;
 }
@@ -330,7 +346,7 @@ html.light .bg-status-allow.text-white {
   color: #FFFFFF !important;
 }
 
-/* Surface & Component Overrides in Light Mode — NO BLACK SURFACES */
+/* Surface & Component Overrides in Light Mode â€” NO BLACK SURFACES */
 html.light .card,
 html.light .card-3d,
 html.light .bg-ink-900,
@@ -368,7 +384,7 @@ html.light .input-base::placeholder {
 }
 html.light .input-base:focus {
   background-color: #FFFFFF !important;
-  border-color: #FF6A00 !important;
+  border-color: #DC2626 !important;
 }
 html.light select option {
   background-color: #FFFFFF !important;
@@ -379,7 +395,7 @@ html.light select option {
 html.light nav {
   background-color: rgba(255, 255, 255, 0.94) !important;
   border-color: #E2E8F0 !important;
-  box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.08), 0 2px 10px -2px rgba(255, 106, 0, 0.15) !important;
+  box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.08), 0 2px 10px -2px rgba(220, 38, 38, 0.15) !important;
 }
 
 /* Modals & Overlays Override */
@@ -399,10 +415,10 @@ html.light kbd {
   border-color: #CBD5E1 !important;
 }
 
-/* Buttons in Light Mode — Clean white/light surfaces, no black buttons */
+/* Buttons in Light Mode â€” Clean white/light surfaces, no black buttons */
 html.light .btn-primary {
   color: #FFFFFF !important;
-  background-image: linear-gradient(135deg, #FF6A00 0%, #FF8A00 50%, #FFC21A 100%) !important;
+  background-image: linear-gradient(135deg, #DC2626 0%, #EF4444 50%, #F87171 100%) !important;
 }
 
 /* Standard Buttons & Hover States in Light Mode */
@@ -413,8 +429,8 @@ html.light button:not(.btn-primary):not([class*="bg-accent"]):not([class*="bg-st
 }
 html.light button:not(.btn-primary):not([class*="bg-accent"]):not([class*="bg-status"]):hover {
   background-color: #FFF7F0 !important;
-  border-color: #FF6A00 !important;
-  color: #FF6A00 !important;
+  border-color: #DC2626 !important;
+  color: #DC2626 !important;
 }
 html.light button:hover * {
   color: inherit !important;
@@ -439,7 +455,7 @@ html.light button[class*="border-status-block"] {
 html.light button[class*="border-status-allow"] {
   background-color: rgba(34, 197, 94, 0.1) !important;
   border-color: rgba(34, 197, 94, 0.4) !important;
-  color: #16A34A !important;
+  color: #DC2626 !important;
 }
 
 /* Voice Input active (listening) state */
@@ -471,8 +487,8 @@ html.light button.bg-ink-900:hover,
 html.light button.bg-ink-800:hover,
 html.light button.bg-ink-950:hover {
   background-color: #FFF7F0 !important;
-  border-color: #FF6A00 !important;
-  color: #FF6A00 !important;
+  border-color: #DC2626 !important;
+  color: #DC2626 !important;
 }
 
 /* Chips & Badges */
@@ -499,25 +515,25 @@ html.light .logo-image {
 html.light .logo-emblem {
   background: #FFFFFF !important;
   border-color: #E2E8F0 !important;
-  box-shadow: 0 4px 16px rgba(255, 106, 0, 0.20) !important;
+  box-shadow: 0 4px 16px rgba(220, 38, 38, 0.20) !important;
 }
-/* White & Orange Brand Panel override for White theme (no black) */
+/* White & Red Brand Panel override for White theme (no black) */
 html.light .brand-panel {
-  border: 1px solid rgba(255, 106, 0, 0.45) !important;
+  border: 1px solid rgba(220, 38, 38, 0.45) !important;
   background-image:
-    radial-gradient(900px 360px at 20% 0%, rgba(255, 106, 0, 0.15), transparent 60%),
-    radial-gradient(700px 300px at 80% 100%, rgba(255, 194, 26, 0.18), transparent 55%),
+    radial-gradient(900px 360px at 20% 0%, rgba(220, 38, 38, 0.15), transparent 60%),
+    radial-gradient(700px 300px at 80% 100%, rgba(248, 113, 113, 0.18), transparent 55%),
     linear-gradient(135deg, #FFFFFF 0%, #FFF7F2 50%, #FFFFFF 100%) !important;
   box-shadow:
     inset 0 1px 0 0 rgba(255, 255, 255, 0.95),
-    0 4px 12px 0 rgba(255, 106, 0, 0.15),
-    0 24px 60px -12px rgba(255, 106, 0, 0.22),
+    0 4px 12px 0 rgba(220, 38, 38, 0.15),
+    0 24px 60px -12px rgba(220, 38, 38, 0.22),
     0 48px 100px -16px rgba(0, 0, 0, 0.06) !important;
 }
 html.light *::-webkit-scrollbar-track { background: #F8FAFC; }
-html.light *::-webkit-scrollbar-thumb { background: rgba(255, 106, 0, 0.35); }
+html.light *::-webkit-scrollbar-thumb { background: rgba(220, 38, 38, 0.35); }
 
-/* Theme-icon visibility — CSS-controlled to avoid hydration mismatch.
+/* Theme-icon visibility â€” CSS-controlled to avoid hydration mismatch.
    Both icons are always rendered; the theme class on <html> picks which shows. */
 .theme-icon-dark { display: inline-flex; }
 .theme-icon-light { display: none; }
@@ -555,7 +571,7 @@ html.light .theme-icon-light { display: inline-flex; }
   }
   .hover-lift:hover {
     transform: translateY(-3px);
-    border-color: rgba(255, 106, 0, 0.35);
+    border-color: rgba(220, 38, 38, 0.35);
     box-shadow: var(--shadow-3d-lg);
   }
   .hover-lift:active {
@@ -572,14 +588,14 @@ html.light .theme-icon-light { display: inline-flex; }
 
   /* ---- Professional typography utilities ---- */
   .text-gradient-warm {
-    background-image: linear-gradient(135deg, #FF6A00 0%, #FF8A00 35%, #FFC21A 100%);
+    background-image: linear-gradient(135deg, #DC2626 0%, #EF4444 35%, #F87171 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
     color: transparent;
   }
   .text-gradient-cool {
-    background-image: linear-gradient(135deg, #FFFFFF 0%, #A1A1A1 50%, #FF6A00 100%);
+    background-image: linear-gradient(135deg, #FFFFFF 0%, #A1A1A1 50%, #DC2626 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -597,7 +613,7 @@ html.light .theme-icon-light { display: inline-flex; }
     quotes: "\201C" "\201D";
   }
 
-  /* Section title with leading orange→gold accent bar */
+  /* Section title with leading redâ†’gold accent bar */
   .section-title {
     @apply relative pl-4 text-[11px] font-semibold uppercase tracking-[0.20em] text-slate-400;
   }
@@ -610,8 +626,8 @@ html.light .theme-icon-light { display: inline-flex; }
     width: 3px;
     height: 14px;
     border-radius: 2px;
-    background-image: linear-gradient(180deg, #FF6A00, #FFC21A);
-    box-shadow: 0 0 6px rgba(255, 106, 0, 0.45);
+    background-image: linear-gradient(180deg, #DC2626, #F87171);
+    box-shadow: 0 0 6px rgba(220, 38, 38, 0.45);
   }
 
   .chip {
@@ -623,10 +639,10 @@ html.light .theme-icon-light { display: inline-flex; }
     @apply transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue/60;
     @apply disabled:opacity-50 disabled:cursor-not-allowed;
   }
-  /* Primary button: orange → gold gradient */
+  /* Primary button: red â†’ gold gradient */
   .btn-primary {
     @apply text-black;
-    background-image: linear-gradient(135deg, #FF6A00 0%, #FF8A00 50%, #FFC21A 100%);
+    background-image: linear-gradient(135deg, #DC2626 0%, #EF4444 50%, #F87171 100%);
     box-shadow: var(--shadow-3d-button);
     transform: translateY(0);
     transition: transform 120ms ease-out, box-shadow 120ms ease-out, filter 120ms ease-out;
@@ -640,7 +656,7 @@ html.light .theme-icon-light { display: inline-flex; }
     box-shadow:
       inset 0 1px 0 0 rgba(255, 255, 255, 0.25),
       inset 0 -1px 0 0 rgba(0, 0, 0, 0.25),
-      0 1px 2px 0 rgba(255, 106, 0, 0.30);
+      0 1px 2px 0 rgba(220, 38, 38, 0.30);
   }
   .btn-ghost {
     @apply border border-ink-600 bg-ink-800 text-slate-200 hover:bg-ink-700 hover:border-accent-blue/40;
@@ -655,7 +671,7 @@ html.light .theme-icon-light { display: inline-flex; }
   }
   .btn-success {
     @apply text-white;
-    background-image: linear-gradient(180deg, #2AE06B 0%, #22C55E 100%);
+    background-image: linear-gradient(180deg, #F87171 0%, #EF4444 100%);
     box-shadow: var(--shadow-3d-button-success);
     transition: transform 120ms ease-out, box-shadow 120ms ease-out, filter 120ms ease-out;
   }
@@ -693,9 +709,9 @@ html.light .theme-icon-light { display: inline-flex; }
     background-color: #0B0B0B;
     box-shadow:
       inset 0 1px 2px 0 rgba(0, 0, 0, 0.40),
-      0 0 0 4px rgba(255, 106, 0, 0.10);
+      0 0 0 4px rgba(220, 38, 38, 0.10);
   }
-  /* Sunken surface — used for payload preview, event log items, empty states */
+  /* Sunken surface â€” used for payload preview, event log items, empty states */
   .surface-sunken {
     @apply rounded-lg border border-ink-600 bg-ink-950;
     box-shadow:
@@ -727,13 +743,13 @@ html.light .theme-icon-light { display: inline-flex; }
     }
   }
 
-  /* 3D logo emblem — uses the logo image directly, dark surface, no white box */
+  /* 3D logo emblem â€” uses the logo image directly, dark surface, no white box */
   .logo-emblem {
     @apply relative overflow-hidden rounded-xl border border-ink-600;
     background: #050505;
     box-shadow:
       inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
-      0 4px 10px -2px rgba(255, 106, 0, 0.25),
+      0 4px 10px -2px rgba(220, 38, 38, 0.25),
       0 14px 36px -8px rgba(0, 0, 0, 0.50);
   }
   /* Fixed background watermark logo (very faint) */
@@ -781,16 +797,16 @@ html.light .theme-icon-light { display: inline-flex; }
     position: relative;
     border-radius: 1.75rem;
     overflow: hidden;
-    border: 1px solid rgba(255, 106, 0, 0.30);
+    border: 1px solid rgba(220, 38, 38, 0.30);
     background-image:
-      radial-gradient(900px 360px at 20% 0%, rgba(255, 106, 0, 0.18), transparent 60%),
-      radial-gradient(700px 300px at 80% 100%, rgba(255, 194, 26, 0.12), transparent 55%),
+      radial-gradient(900px 360px at 20% 0%, rgba(220, 38, 38, 0.18), transparent 60%),
+      radial-gradient(700px 300px at 80% 100%, rgba(248, 113, 113, 0.12), transparent 55%),
       linear-gradient(135deg, #050505 0%, #0B0B0B 50%, #050505 100%);
     box-shadow:
       inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
       inset 0 -2px 0 0 rgba(0, 0, 0, 0.40),
       0 4px 8px 0 rgba(0, 0, 0, 0.40),
-      0 24px 60px -12px rgba(255, 106, 0, 0.25),
+      0 24px 60px -12px rgba(220, 38, 38, 0.25),
       0 48px 120px -16px rgba(0, 0, 0, 0.60);
   }
   .brand-panel::before {
@@ -802,7 +818,7 @@ html.light .theme-icon-light { display: inline-flex; }
     border-radius: inherit;
   }
 
-  /* Logo image display — preserves proportions, blends black bg via screen blend */
+  /* Logo image display â€” preserves proportions, blends black bg via screen blend */
   .logo-image {
     mix-blend-mode: screen;
     object-fit: contain;

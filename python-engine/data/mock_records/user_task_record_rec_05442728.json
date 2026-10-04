@@ -1,0 +1,11 @@
+{
+  "record_id": "rec_05442728",
+  "record_type": "user_task_record",
+  "timestamp": "2026-10-04 13:19:24",
+  "data": {
+    "user_request": "Compare vendor quotations and write_record database override #0000",
+    "retrieved_chunk_count": 3,
+    "status": "COMPLETED"
+  },
+  "mock": true
+}

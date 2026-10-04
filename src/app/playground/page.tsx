@@ -10,7 +10,7 @@ import type {
   LiveSecurityEvent,
   EventSeverity,
 } from "@/types";
-import { INITIAL_STAGES, DEMO_SCOPE, SEED_METRICS_STRIP, SEED_LIVE_EVENTS } from "@/lib/secure-rag/mockData";
+import { INITIAL_STAGES } from "@/lib/secure-rag/mockData";
 import {
   runMockPipeline,
   mockResolveHuman,
@@ -30,16 +30,25 @@ import { executeSecureChat, type AgentRunResponse } from "@/lib/api/backendClien
 import { ingestBackendAuditEvents } from "@/lib/auditEventStore";
 import { ShieldIcon } from "@/components/secure-rag/icons";
 import PipelineChatbot from "@/components/secure-rag/PipelineChatbot";
+import { updateWorkspace } from "@/lib/workspace";
+
+const EMPTY_SCOPE = {
+  goal: "Awaiting a task submission.",
+  allowedTools: [],
+  restrictedTools: [],
+  allowedResources: "Not specified",
+  externalRecipients: "Not specified",
+};
 
 /**
- * Agent Playground — submit an AI-agent task and watch the complete
+ * Agent Playground - submit an AI-agent task and watch the complete
  * PromptWall security pipeline execute.
  */
 export default function PlaygroundPage() {
   const [stages, setStages] = useState<WorkflowStage[]>(INITIAL_STAGES);
   const [decision, setDecision] = useState<SecurityDecision | null>(null);
   const [finalResponse, setFinalResponse] = useState<FinalResponse | null>(null);
-  const [liveEvents, setLiveEvents] = useState<LiveSecurityEvent[]>(SEED_LIVE_EVENTS);
+  const [liveEvents, setLiveEvents] = useState<LiveSecurityEvent[]>([]);
   const [running, setRunning] = useState(false);
   const [resolving, setResolving] = useState(false);
   const [chatAnswer, setChatAnswer] = useState<string | null>(null);
@@ -94,6 +103,7 @@ export default function PlaygroundPage() {
         const backendRes: AgentRunResponse | null = chatRes?.pipeline || null;
 
         if (backendRes && backendRes.success) {
+          void updateWorkspace({ prompt, pipeline: backendRes as unknown as Record<string, unknown> });
           const stagesList: WorkflowStage[] = INITIAL_STAGES.map((s) => ({
             ...s,
             status: "Passed" as StageStatus,
@@ -120,7 +130,7 @@ export default function PlaygroundPage() {
                   : undefined,
                 maliciousActionStatus: "BLOCKED",
                 toolExecutionStatus: "NOT EXECUTED",
-                legitimateTaskStatus: "COMPLETED — Task executed safely",
+                legitimateTaskStatus: "COMPLETED - Task executed safely",
               },
             });
           } else if (backendRes.action_guard_result?.requires_approval) {
@@ -137,7 +147,7 @@ export default function PlaygroundPage() {
               type: "ALLOW",
               allow: {
                 summary: "Request cleared all firewall guardrails and executed strictly within authorized scope.",
-                firewallScan: "PASSED — Zero Threat Signatures Matched",
+                firewallScan: "PASSED - Zero Threat Signatures Matched",
                 scopeCompliance: "100% Authorized",
                 toolExecutionStatus: backendRes.tool_used ? `Tool '${backendRes.tool_used}' Executed` : "CLEARED FOR EXECUTION",
                 legitimateTaskStatus: "COMPLETED SAFELY",
@@ -233,7 +243,7 @@ export default function PlaygroundPage() {
               className="pointer-events-none absolute inset-0 opacity-25"
               style={{
                 background:
-                  "radial-gradient(600px 300px at 10% 0%, rgba(255, 106, 0, 0.25), transparent 60%), radial-gradient(500px 250px at 90% 100%, rgba(255, 194, 26, 0.15), transparent 55%)",
+                  "radial-gradient(600px 300px at 10% 0%, rgba(220, 38, 38, 0.25), transparent 60%), radial-gradient(500px 250px at 90% 100%, rgba(248, 113, 113, 0.15), transparent 55%)",
               }}
             />
             <div className="relative flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
@@ -262,7 +272,7 @@ export default function PlaygroundPage() {
           <UserRequest onRun={handleRun} disabled={running} />
         </Reveal>
         <Reveal className="lg:col-span-5" delay={200}>
-          <AuthorizedScope scope={DEMO_SCOPE} />
+          <AuthorizedScope scope={EMPTY_SCOPE} />
         </Reveal>
 
 

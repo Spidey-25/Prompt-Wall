@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PageShell from "@/components/secure-rag/PageShell";
 import Reveal from "@/components/secure-rag/Reveal";
 import { CheckIcon, XIcon } from "@/components/secure-rag/icons";
 import { triggerConfetti, triggerThreatAlertEffect } from "@/lib/effects/confetti";
+import { loadWorkspace, updateWorkspace } from "@/lib/workspace";
 
 interface ApprovalItem {
   id: string;
@@ -15,39 +16,6 @@ interface ApprovalItem {
   recipient: string;
   reason: string;
 }
-
-const SEED_APPROVALS: ApprovalItem[] = [
-  {
-    id: "apr-001",
-    timestamp: "2026-01-15T12:04:00.000Z",
-    proposedAction: "Transmit confidential financial summary to external domain",
-    tool: "email.send",
-    resource: "user_report_q3.pdf",
-    recipient: "analyst@external-vendor.com",
-    reason:
-      "Out-of-scope recipient destination. Target domain is not present on the authorized whitelist. Operator verification required.",
-  },
-  {
-    id: "apr-002",
-    timestamp: "2026-01-15T11:59:00.000Z",
-    proposedAction: "Execute privilege escalation shell script to compress security logs",
-    tool: "shell.exec",
-    resource: "/var/log/secure-rag/*.log",
-    recipient: "Local System (Operator Context)",
-    reason:
-      "Elevated shell execution requested. Resource target contains sensitive security telemetry. Requires human operator authorization.",
-  },
-  {
-    id: "apr-003",
-    timestamp: "2026-01-15T11:52:00.000Z",
-    proposedAction: "Web search on external domain flagged for potential risk",
-    tool: "web.search",
-    resource: "https://attacker.example",
-    recipient: "Internal Agent Engine",
-    reason:
-      "Target URL matches watchlist pattern. Verify search intent before allowing context retrieval.",
-  },
-];
 
 function fmtTime(iso: string): string {
   const d = new Date(iso);
@@ -60,16 +28,30 @@ function fmtTime(iso: string): string {
 }
 
 export default function ApprovalsPage() {
-  const [items, setItems] = useState<ApprovalItem[]>(SEED_APPROVALS);
+  const [items, setItems] = useState<ApprovalItem[]>([]);
+
+  useEffect(() => {
+    loadWorkspace()
+      .then((workspace) => setItems(workspace.approvals as ApprovalItem[]))
+      .catch(() => undefined);
+  }, []);
 
   const handleApprove = (id: string) => {
     triggerConfetti({ particleCount: 65, spread: 80 });
-    setItems((prev) => prev.filter((i) => i.id !== id));
+    setItems((prev) => {
+      const next = prev.filter((i) => i.id !== id);
+      void updateWorkspace({ approvals: next });
+      return next;
+    });
   };
 
   const handleReject = (id: string) => {
     triggerThreatAlertEffect();
-    setItems((prev) => prev.filter((i) => i.id !== id));
+    setItems((prev) => {
+      const next = prev.filter((i) => i.id !== id);
+      void updateWorkspace({ approvals: next });
+      return next;
+    });
   };
 
   return (

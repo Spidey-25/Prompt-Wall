@@ -70,6 +70,61 @@ export interface SecureChatResponse {
   pipeline?: AgentRunResponse;
 }
 
+export interface MlResult {
+  status: "UNTRAINED" | "READY";
+  prediction: "SAFE" | "THREAT" | null;
+  confidence: number | null;
+  training_samples: number;
+  message: string;
+  label_recorded?: string;
+}
+
+export async function predictMlInput(text: string): Promise<MlResult> {
+  const res = await fetch(`${BACKEND_URL}/api/ml/predict`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "ML prediction failed");
+  return data.result;
+}
+
+export async function labelMlInput(
+  text: string,
+  label: "SAFE" | "THREAT"
+): Promise<MlResult> {
+  const res = await fetch(`${BACKEND_URL}/api/ml/feedback`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text, label }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "ML feedback failed");
+  return data.result;
+}
+
+export async function fetchAuditEvents(): Promise<Array<{
+  id: string;
+  timestamp: number | string;
+  event_type: string;
+  description: string;
+  severity?: string;
+  decision?: string;
+  evidence?: string;
+  rule?: string;
+  tool?: string;
+  risk_score?: number;
+  ip_address?: string;
+}>> {
+  const res = await fetch("/api/audit", {
+    signal: AbortSignal.timeout(10000),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Audit log unavailable");
+  return data.events || [];
+}
+
 export interface UploadedFile {
   name: string;
   size: number;
@@ -124,7 +179,7 @@ export async function executeSecureChat(message: string): Promise<SecureChatResp
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message }),
-      signal: AbortSignal.timeout(120000),
+      signal: AbortSignal.timeout(70000),
     });
     const data = (await res.json().catch(() => ({}))) as SecureChatResponse;
     return res.ok ? data : { ...data, success: false };

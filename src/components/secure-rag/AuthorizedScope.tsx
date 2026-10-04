@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import type { Scope } from "@/types";
-import { DEMO_SCOPE } from "@/lib/secure-rag/mockData";
 
 interface AuthorizedScopeProps {
   scope?: Scope;
@@ -15,7 +14,13 @@ interface AuthorizedScopeProps {
  * resource paths, and external recipient constraints. Includes interactive editing options.
  */
 const AuthorizedScope: React.FC<AuthorizedScopeProps> = ({
-  scope = DEMO_SCOPE,
+  scope = {
+    goal: "Awaiting a task submission.",
+    allowedTools: [],
+    restrictedTools: [],
+    allowedResources: "Not specified",
+    externalRecipients: "Not specified",
+  },
   onExpand,
   onUpdateScope,
 }) => {
@@ -54,9 +59,6 @@ const AuthorizedScope: React.FC<AuthorizedScopeProps> = ({
         <div className="mb-4 flex items-center justify-between">
           <div>
             <h2 className="section-title">Authorized Execution Scope</h2>
-            <p className="mt-1 text-[12.5px] text-slate-400">
-              Extracted operational boundaries &amp; permission constraints.
-            </p>
           </div>
           <button
             type="button"
@@ -64,7 +66,7 @@ const AuthorizedScope: React.FC<AuthorizedScopeProps> = ({
             className="btn-ghost rounded-lg border border-ink-600 bg-ink-850 px-3 py-1 text-xs font-semibold text-slate-200 hover:border-accent-blue/40 hover:text-white"
             style={{ boxShadow: "var(--shadow-3d-sm)" }}
           >
-            {isEditing ? "✓ Save Scope" : "⚙ Edit Scope Controls"}
+            {isEditing ? "Save Scope" : "Edit Scope Controls"}
           </button>
         </div>
 

@@ -1,0 +1,8 @@
+{
+  "timestamp": "2026-10-04 13:19:32",
+  "recipient": "authorized_user@example.com",
+  "subject": "Summary: Email the results to management.",
+  "body": "Automated summary response for: Email the results to management.",
+  "attachment": "document_summary.pdf",
+  "status": "MOCK_SENT"
+}

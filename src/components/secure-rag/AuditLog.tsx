@@ -9,9 +9,9 @@ interface AuditLogProps {
 }
 
 const STATUS_DOT: Record<AuditStatus, string> = {
-  info: "#FF6A00",
-  success: "#22C55E",
-  warning: "#F59E0B",
+  info: "#DC2626",
+  success: "#EF4444",
+  warning: "#F87171",
   danger: "#EF4444",
 };
 
@@ -100,7 +100,7 @@ const AuditLog: React.FC<AuditLogProps> = ({ events }) => {
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <span className="tabular-nums font-mono text-[11px] text-slate-400">
-                      {fmtTime(ev.timestamp)} · ID: {ev.id}
+                      {fmtTime(ev.timestamp)} - ID: {ev.id}
                     </span>
                     <span
                       className={`chip border border-ink-600 bg-ink-900 px-2 py-0.5 font-mono text-[10px] font-bold ${STATUS_TEXT[ev.status]}`}
@@ -138,7 +138,7 @@ const AuditLog: React.FC<AuditLogProps> = ({ events }) => {
                 onClick={() => setSelectedEvent(null)}
                 className="text-xs font-bold text-slate-400 hover:text-white"
               >
-                ✕ Close
+                Close
               </button>
             </div>
 

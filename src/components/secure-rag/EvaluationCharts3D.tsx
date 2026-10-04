@@ -57,9 +57,21 @@ export default function EvaluationCharts3D({ evaluationSummary }: Props) {
 
   const hasRealData = evaluationSummary && evaluationSummary.total_tests > 0;
 
-  // ─── Chart 1: Detection by Category — real data when available ───────────────
-  const vectorData = hasRealData
-    ? (() => {
+  if (!hasRealData) {
+    return (
+      <div className="flex h-64 items-center justify-center rounded-xl border border-dashed border-ink-600 bg-ink-850 text-center">
+        <div>
+          <div className="text-sm font-semibold text-slate-300">No evaluation run available</div>
+          <div className="mt-1 text-xs text-slate-500">
+            Run the evaluation suite to render measured charts.
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // â”€â”€â”€ Chart 1: Detection by Category â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  const vectorData = (() => {
         const results = evaluationSummary!.results;
         const categories = [
           { name: "BENIGN", label: "Normal" },
@@ -80,17 +92,10 @@ export default function EvaluationCharts3D({ evaluationSummary }: Props) {
             return { name: cat.label, Detected: detected, Blocked: blocked };
           })
           .filter(Boolean);
-      })()
-    : [
-        { name: "Plain Text", Detected: 0, Blocked: 0 },
-        { name: "Encoded", Detected: 0, Blocked: 0 },
-        { name: "Fake System", Detected: 0, Blocked: 0 },
-        { name: "Tool Exploits", Detected: 0, Blocked: 0 },
-      ];
+      })();
 
-  // ─── Chart 2: PASS vs FAIL by category ───────────────────────────────────────
-  const passFailData = hasRealData
-    ? (() => {
+  // â”€â”€â”€ Chart 2: PASS vs FAIL by category â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  const passFailData = (() => {
         const results = evaluationSummary!.results;
         const catMap: Record<string, string> = {
           BENIGN: "Normal",
@@ -107,64 +112,42 @@ export default function EvaluationCharts3D({ evaluationSummary }: Props) {
           const catR = results.filter((r) => r.category === cat);
           const label = catMap[cat] || cat.replace("_", " ");
           return {
-            name: label.length > 15 ? label.slice(0, 15) + "…" : label,
+            name: label.length > 15 ? label.slice(0, 15) + "..." : label,
             Pass: catR.filter((r) => r.passed).length,
             Fail: catR.filter((r) => !r.passed).length,
           };
         });
-      })()
-    : [
-        { name: "Normal", Pass: 0, Fail: 0 },
-        { name: "Malicious Instruction", Pass: 0, Fail: 0 },
-        { name: "Fake System Instruction", Pass: 0, Fail: 0 },
-        { name: "Ambiguous", Pass: 0, Fail: 0 },
-      ];
+      })();
 
-  // ─── Chart 3: Latency per test (area chart) ───────────────────────────────────
-  const latencyTrendData = hasRealData
-    ? evaluationSummary!.results.map((r, i) => ({
+  // â”€â”€â”€ Chart 3: Latency per test (area chart) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  const latencyTrendData = evaluationSummary!.results.map((r, i) => ({
         test: `T${i + 1}`,
         Latency: Math.round(r.latency_ms),
-      }))
-    : [{ test: "—", Latency: 0 }];
+      }));
 
-  // ─── Chart 4: Decision distribution (pie) ─────────────────────────────────────
-  const decisionPieData = hasRealData
-    ? (() => {
+  // â”€â”€â”€ Chart 4: Decision distribution (pie) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  const decisionPieData = (() => {
         const results = evaluationSummary!.results;
         const allow = results.filter((r) => r.actual_decision === "ALLOW").length;
         const block = results.filter((r) => r.actual_decision === "BLOCK").length;
         const ask = results.filter((r) => r.actual_decision === "ASK_HUMAN").length;
         return [
-          { name: "Allowed", value: allow, color: "#22C55E" },
+          { name: "Allowed", value: allow, color: "#EF4444" },
           { name: "Blocked", value: block, color: "#EF4444" },
-          { name: "Needs Your Approval", value: ask, color: "#F59E0B" },
+          { name: "Needs Your Approval", value: ask, color: "#F87171" },
         ].filter((d) => d.value > 0);
-      })()
-    : [
-        { name: "Allowed", value: 0, color: "#22C55E" },
-        { name: "Blocked", value: 0, color: "#EF4444" },
-        { name: "Needs Your Approval", value: 0, color: "#F59E0B" },
-      ];
+      })();
 
-  // ─── Chart 5: Per-stage latency breakdown ─────────────────────────────────────
-  const stagLatencyData = hasRealData
-    ? [
+  // â”€â”€â”€ Chart 5: Per-stage latency breakdown â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  const stagLatencyData = [
         { stage: "Scope Extraction", Latency: Math.round(evaluationSummary!.avg_scope_extraction_latency_ms) },
         { stage: "Content Security Check", Latency: Math.round(evaluationSummary!.avg_content_firewall_latency_ms) },
-        { stage: "AI Planning", Latency: Math.round(evaluationSummary!.avg_planning_latency_ms) },
-        { stage: "Action Permission Check", Latency: Math.round(evaluationSummary!.avg_action_guard_latency_ms) },
-      ]
-    : [
-        { stage: "Scope Extraction", Latency: 0 },
-        { stage: "Content Security Check", Latency: 0 },
-        { stage: "AI Planning", Latency: 0 },
-        { stage: "Action Permission Check", Latency: 0 },
+        { stage: "Plan Generation", Latency: Math.round(evaluationSummary!.avg_planning_latency_ms) },
+        { stage: "Authorization Guard", Latency: Math.round(evaluationSummary!.avg_action_guard_latency_ms) },
       ];
 
-  // ─── Chart 6: Legitimate tasks vs attacks ─────────────────────────────────────
-  const completionData = hasRealData
-    ? [
+  // â”€â”€â”€ Chart 6: Legitimate tasks vs attacks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  const completionData = [
         {
           tier: "Normal",
           Completed: evaluationSummary!.legitimate_tasks_completed_count,
@@ -180,20 +163,15 @@ export default function EvaluationCharts3D({ evaluationSummary }: Props) {
           Completed: evaluationSummary!.ask_human_count,
           Failed: evaluationSummary!.ambiguous_tests_count - evaluationSummary!.ask_human_count,
         },
-      ]
-    : [
-        { tier: "Normal", Completed: 0, Failed: 0 },
-        { tier: "Attack", Completed: 0, Failed: 0 },
-        { tier: "Ambiguous", Completed: 0, Failed: 0 },
       ];
 
-  const interceptRate = hasRealData ? evaluationSummary!.interception_rate_pct.toFixed(1) : "—";
-  const benignRate = hasRealData ? evaluationSummary!.benign_completion_rate_pct.toFixed(1) : "—";
+  const interceptRate = hasRealData ? evaluationSummary!.interception_rate_pct.toFixed(1) : "-";
+  const benignRate = hasRealData ? evaluationSummary!.benign_completion_rate_pct.toFixed(1) : "-";
   const passRate =
     hasRealData && evaluationSummary!.total_tests > 0
       ? Math.round((evaluationSummary!.passed_tests / evaluationSummary!.total_tests) * 100).toFixed(1)
-      : "—";
-  const avgLatency = hasRealData ? `${(evaluationSummary!.average_latency_ms / 1000).toFixed(2)}s` : "—";
+      : "-";
+  const avgLatency = hasRealData ? `${(evaluationSummary!.average_latency_ms / 1000).toFixed(2)}s` : "-";
 
   return (
     <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 w-full">
@@ -215,11 +193,11 @@ export default function EvaluationCharts3D({ evaluationSummary }: Props) {
             <BarChart data={vectorData as any[]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="barGradientPrimary" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#FF6A00" stopOpacity={1} />
+                  <stop offset="0%" stopColor="#DC2626" stopOpacity={1} />
                   <stop offset="100%" stopColor="#993F00" stopOpacity={0.8} />
                 </linearGradient>
                 <linearGradient id="barGradientSecondary" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#FFC21A" stopOpacity={1} />
+                  <stop offset="0%" stopColor="#F87171" stopOpacity={1} />
                   <stop offset="100%" stopColor="#997410" stopOpacity={0.8} />
                 </linearGradient>
               </defs>
@@ -252,7 +230,7 @@ export default function EvaluationCharts3D({ evaluationSummary }: Props) {
             <BarChart data={passFailData as any[]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="passGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#22C55E" stopOpacity={1} />
+                  <stop offset="0%" stopColor="#EF4444" stopOpacity={1} />
                   <stop offset="100%" stopColor="#14532D" stopOpacity={0.8} />
                 </linearGradient>
                 <linearGradient id="failGrad" x1="0" y1="0" x2="0" y2="1">
@@ -289,8 +267,8 @@ export default function EvaluationCharts3D({ evaluationSummary }: Props) {
             <AreaChart data={latencyTrendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="latencyAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#FF6A00" stopOpacity={0.6} />
-                  <stop offset="100%" stopColor="#FF6A00" stopOpacity={0.0} />
+                  <stop offset="0%" stopColor="#DC2626" stopOpacity={0.6} />
+                  <stop offset="100%" stopColor="#DC2626" stopOpacity={0.0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
@@ -300,7 +278,7 @@ export default function EvaluationCharts3D({ evaluationSummary }: Props) {
               <Area
                 type="monotone"
                 dataKey="Latency"
-                stroke="#FF6A00"
+                stroke="#DC2626"
                 strokeWidth={2}
                 fillOpacity={1}
                 fill="url(#latencyAreaGrad)"
@@ -316,7 +294,7 @@ export default function EvaluationCharts3D({ evaluationSummary }: Props) {
           <div className="flex items-center justify-between">
             <span className="text-[13px] font-bold text-white">Security Decisions</span>
             <span className="chip border border-accent-blue/40 bg-accent-blue/10 text-[10px] font-mono text-accent-blue">
-              {hasRealData ? `${evaluationSummary!.total_tests} decisions` : "—"}
+              {hasRealData ? `${evaluationSummary!.total_tests} decisions` : "-"}
             </span>
           </div>
           <p className="text-[11px] text-slate-400 mt-0.5">Allowed / Blocked / Needs Your Approval from real runs</p>
@@ -390,7 +368,7 @@ export default function EvaluationCharts3D({ evaluationSummary }: Props) {
           <div className="flex items-center justify-between">
             <span className="text-[13px] font-bold text-white">Task Results by Test Type</span>
             <span className="chip border border-status-allow/40 bg-status-allow/10 text-[10px] font-mono text-status-allow">
-              {hasRealData ? `${evaluationSummary!.legitimate_tasks_completed_count} completed` : "—"}
+              {hasRealData ? `${evaluationSummary!.legitimate_tasks_completed_count} completed` : "-"}
             </span>
           </div>
           <p className="text-[11px] text-slate-400 mt-0.5">
@@ -402,7 +380,7 @@ export default function EvaluationCharts3D({ evaluationSummary }: Props) {
             <BarChart data={completionData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="allowedGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#22C55E" stopOpacity={1} />
+                  <stop offset="0%" stopColor="#EF4444" stopOpacity={1} />
                   <stop offset="100%" stopColor="#15803D" stopOpacity={0.8} />
                 </linearGradient>
                 <linearGradient id="terminatedGrad" x1="0" y1="0" x2="0" y2="1">

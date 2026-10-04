@@ -31,3 +31,8 @@ Thumbs.db
 .env
 .env.local
 *.log
+
+# Local ML model state and reviewer-labelled training records
+python-engine/data/ml/
+python-engine/data/audit_events.jsonl
+prisma/dev.db

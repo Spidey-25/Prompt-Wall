@@ -11,6 +11,15 @@ export interface AgentRunRequest {
   message: string;
 }
 
+export interface MlResult {
+  status: 'UNTRAINED' | 'READY';
+  prediction: 'SAFE' | 'THREAT' | null;
+  confidence: number | null;
+  training_samples: number;
+  message: string;
+  label_recorded?: string;
+}
+
 export interface AgentRunResponse {
   success: boolean;
   response: string;
@@ -25,6 +34,7 @@ export interface AgentRunResponse {
   error?: string;
   threat_detected?: boolean;
   action_blocked?: boolean;
+  ml_result?: MlResult;
 }
 
 export class PythonService {
@@ -72,6 +82,32 @@ export class PythonService {
         error: errorMessage,
       };
     }
+  }
+
+  public static async mlPredict(text: string): Promise<MlResult> {
+    const response = await axios.post<{ result: MlResult }>(
+      `${this.getBaseUrl()}/ml/predict`,
+      { text },
+      { timeout: 10000 }
+    );
+    return response.data.result;
+  }
+
+  public static async mlFeedback(text: string, label: 'SAFE' | 'THREAT'): Promise<MlResult> {
+    const response = await axios.post<{ result: MlResult }>(
+      `${this.getBaseUrl()}/ml/feedback`,
+      { text, label },
+      { timeout: 10000 }
+    );
+    return response.data.result;
+  }
+
+  public static async getAuditEvents(): Promise<Array<Record<string, any>>> {
+    const response = await axios.get<{ events: Array<Record<string, any>> }>(
+      `${this.getBaseUrl()}/audit/events`,
+      { timeout: 10000 }
+    );
+    return response.data.events;
   }
 
   public static async getRulebookInfo(): Promise<Record<string, any>> {

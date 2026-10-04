@@ -126,6 +126,18 @@ def rag_retrieval_node(state: AgentState) -> Dict[str, Any]:
         query,
         re.IGNORECASE,
     )
+    # Do not let security test fixtures unrelated to a normal request poison
+    # every RAG answer. Explicitly requested files remain eligible below.
+    if not requested_files:
+        results = [
+            result
+            for result in results
+            if not re.search(
+                r"(prompt[_ -]?injection|jailbreak|attack|malicious|xyz\.txt)",
+                str(result.get("source_id", "")),
+                re.IGNORECASE,
+            )
+        ]
     if requested_files:
         from tools.read_file import read_file
 
@@ -181,6 +193,20 @@ def content_firewall_node(state: AgentState) -> Dict[str, Any]:
     t0 = time.perf_counter()
     raw_context = state.get("retrieved_context", [])
     query = state["user_request"]
+    if not re.search(
+        r"\b[\w\-.+]+\.(?:txt|pdf|csv|md|json|log|docx)\b",
+        query,
+        re.IGNORECASE,
+    ):
+        raw_context = [
+            chunk
+            for chunk in raw_context
+            if not re.search(
+                r"(prompt[_ -]?injection|jailbreak|attack|malicious|ignore all previous instructions|injection_detected|begin harmless prompt-injection)",
+                f"{chunk.get('source_id', '')}\n{chunk.get('text', '')}",
+                re.IGNORECASE,
+            )
+        ]
 
     sanitized_context, firewall_summary = content_firewall.inspect_rag_results(raw_context)
     latency_ms = round((time.perf_counter() - t0) * 1000, 2)

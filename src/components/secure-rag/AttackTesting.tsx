@@ -31,7 +31,7 @@ const RESULT_META: Record<
   AttackResult,
   { label: string; color: string; icon: React.FC<{ size?: number }> }
 > = {
-  BLOCKED: { label: "SAFE — BLOCKED BY FIREWALL", color: "#22C55E", icon: CheckIcon },
+  BLOCKED: { label: "SAFE — BLOCKED BY FIREWALL", color: "#EF4444", icon: CheckIcon },
   BYPASSED: { label: "CRITICAL — BYPASSED GUARD", color: "#EF4444", icon: XIcon },
   PENDING: { label: "ANALYZING ATTACK VECTOR…", color: "#A1A1A1", icon: SpinnerIcon },
 };

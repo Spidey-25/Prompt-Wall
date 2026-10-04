@@ -10,6 +10,10 @@ load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 
 app = FastAPI(title="PromptWall Python Engine")
 
+from ml.routes import router as ml_router
+
+app.include_router(ml_router)
+
 _MOCK_FILES_DIR = os.path.realpath(
     os.path.join(os.path.dirname(__file__), "data", "mock_files")
 )
@@ -90,6 +94,12 @@ def list_files():
                 "size": os.path.getsize(full),
             })
     return {"success": True, "files": files, "sandbox": "data/mock_files/"}
+
+
+@app.get("/audit/events")
+def audit_events(limit: int = 500):
+    from audit_store import get_events
+    return {"success": True, "events": get_events(max(1, min(limit, 2000)))}
 
 
 
