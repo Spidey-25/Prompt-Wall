@@ -37,21 +37,21 @@ export const DEMO_SCOPE: Scope = {
 export const SEED_AUDIT_LOG: AuditEvent[] = [
   {
     id: "evt-0001",
-    timestamp: new Date(Date.now() - 1000 * 60 * 6).toISOString(),
+    timestamp: "2026-01-15T12:00:00.000Z",
     eventType: "TASK_COMPLETED",
     status: "success",
     description: "Session successfully completed. 3 tool calls executed with zero threat detections.",
   },
   {
     id: "evt-0002",
-    timestamp: new Date(Date.now() - 1000 * 60 * 4).toISOString(),
+    timestamp: "2026-01-15T12:02:00.000Z",
     eventType: "ACTION_ALLOWED",
     status: "success",
     description: "Web search tool action verified and cleared by Action Guard policy.",
   },
   {
     id: "evt-0003",
-    timestamp: new Date(Date.now() - 1000 * 60 * 2).toISOString(),
+    timestamp: "2026-01-15T12:04:00.000Z",
     eventType: "RETRIEVAL",
     status: "info",
     description: "RAG vector database index warmed — 12,480 context chunks active.",
@@ -71,28 +71,28 @@ export const SEED_METRICS_STRIP: SecurityMetrics = {
 export const SEED_LIVE_EVENTS: LiveSecurityEvent[] = [
   {
     id: "lev-001",
-    timestamp: new Date(Date.now() - 1000 * 30).toISOString(),
+    timestamp: "2026-01-15T12:05:30.000Z",
     message: "Unauthorized send_email action blocked by Action Guard",
     severity: "HIGH",
     icon: "block",
   },
   {
     id: "lev-002",
-    timestamp: new Date(Date.now() - 1000 * 60).toISOString(),
+    timestamp: "2026-01-15T12:05:00.000Z",
     message: "Base64 encoded prompt injection attack payload detected",
     severity: "HIGH",
     icon: "warn",
   },
   {
     id: "lev-003",
-    timestamp: new Date(Date.now() - 1000 * 90).toISOString(),
+    timestamp: "2026-01-15T12:04:30.000Z",
     message: "Legitimate read_file tool request cleared",
     severity: "LOW",
     icon: "safe",
   },
   {
     id: "lev-004",
-    timestamp: new Date(Date.now() - 1000 * 120).toISOString(),
+    timestamp: "2026-01-15T12:04:00.000Z",
     message: "Fake system context message intercepted by Content Firewall",
     severity: "MEDIUM",
     icon: "warn",

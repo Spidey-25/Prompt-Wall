@@ -33,13 +33,15 @@ const Reveal: React.FC<RevealProps> = ({
   enabled = true,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  // Lazy initial state — if disabled or no IntersectionObserver, render visible immediately.
-  const [visible, setVisible] = useState(
-    () => !enabled || typeof IntersectionObserver === "undefined"
-  );
+  // Keep the initial render identical on the server and in the browser.
+  const [visible, setVisible] = useState(() => !enabled);
 
   useEffect(() => {
     if (visible) return;
+    if (typeof IntersectionObserver === "undefined") {
+      setVisible(true);
+      return;
+    }
     const el = ref.current;
     if (!el) return;
 

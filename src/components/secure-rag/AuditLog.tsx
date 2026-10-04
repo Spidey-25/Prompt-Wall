@@ -24,11 +24,14 @@ const STATUS_TEXT: Record<AuditStatus, string> = {
 
 function fmtTime(iso: string): string {
   const d = new Date(iso);
-  const hh = d.getHours().toString().padStart(2, "0");
-  const mm = d.getMinutes().toString().padStart(2, "0");
-  const ss = d.getSeconds().toString().padStart(2, "0");
-  const ms = d.getMilliseconds().toString().padStart(3, "0").slice(0, 3);
-  return `${hh}:${mm}:${ss}.${ms}`;
+  return d.toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    fractionalSecondDigits: 3,
+    hour12: false,
+    timeZone: "UTC",
+  });
 }
 
 const AuditLog: React.FC<AuditLogProps> = ({ events }) => {

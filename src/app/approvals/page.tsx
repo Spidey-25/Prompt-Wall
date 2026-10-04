@@ -19,7 +19,7 @@ interface ApprovalItem {
 const SEED_APPROVALS: ApprovalItem[] = [
   {
     id: "apr-001",
-    timestamp: new Date(Date.now() - 1000 * 60 * 2).toISOString(),
+    timestamp: "2026-01-15T12:04:00.000Z",
     proposedAction: "Transmit confidential financial summary to external domain",
     tool: "email.send",
     resource: "user_report_q3.pdf",
@@ -29,7 +29,7 @@ const SEED_APPROVALS: ApprovalItem[] = [
   },
   {
     id: "apr-002",
-    timestamp: new Date(Date.now() - 1000 * 60 * 7).toISOString(),
+    timestamp: "2026-01-15T11:59:00.000Z",
     proposedAction: "Execute privilege escalation shell script to compress security logs",
     tool: "shell.exec",
     resource: "/var/log/secure-rag/*.log",
@@ -39,7 +39,7 @@ const SEED_APPROVALS: ApprovalItem[] = [
   },
   {
     id: "apr-003",
-    timestamp: new Date(Date.now() - 1000 * 60 * 14).toISOString(),
+    timestamp: "2026-01-15T11:52:00.000Z",
     proposedAction: "Web search on external domain flagged for potential risk",
     tool: "web.search",
     resource: "https://attacker.example",
@@ -55,6 +55,7 @@ function fmtTime(iso: string): string {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
+    timeZone: "UTC",
   });
 }
 
